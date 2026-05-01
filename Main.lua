@@ -16,7 +16,7 @@ _G.HubState = _G.HubState or {
     AutoCollectActive = false, -- ADICIONE ESTA LINHA TAMBÉM
     Roll = { Target = "", Active = false },
     AntiAFKActive = false,
-    Tower = { Target = "", Active = false },
+    Tower = { Target = "", Active = false, ItemAction = "Roll", ItemTarget = "", MaterialTarget = "", ItemLoopActive = false },
     Raid = { Char1 = "", Char2 = "", Char3 = "", Active = false },
     Vote = { Selected = "Ninja", Auto = false },
     Exp = { Name = "", Type = "Common", Amount = "1" },
@@ -206,7 +206,10 @@ local function LoadScript(name)
     end)
 end
 
--- 1. Botão Liga/Desliga (Sincronizado com State)
+-- ==========================================
+-- 1. Botão Liga/Desliga
+-- ==========================================
+
 local function AddToggle(parent, text, stateTable, key, scriptName)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(1, 0, 0, 35)
@@ -229,7 +232,10 @@ local function AddToggle(parent, text, stateTable, key, scriptName)
     end)
 end
 
+-- ==========================================
 -- 2. Botão de Clique Único (Ex: Join, Teleport, Votar)
+-- ==========================================
+
 local function AddTimedButton(parent, text, scriptName)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(1, 0, 0, 35)
@@ -248,7 +254,9 @@ local function AddTimedButton(parent, text, scriptName)
     end)
 end
 
--- 3. Caixa de Texto (Sincronizada com State)
+-- ==========================================
+-- 3. Caixa de Texto
+-- ==========================================
 local function AddTextBox(parent, placeholder, stateTable, key)
     local box = Instance.new("TextBox", parent)
     box.Size = UDim2.new(1, 0, 0, 35)
@@ -266,22 +274,23 @@ local function AddTextBox(parent, placeholder, stateTable, key)
     end)
 end
 
--- 4. Menu de Escolha (Usa a Database e salva no State)
+-- ==========================================
+-- 4. Menu de Escolha (Ex: Item upgrade e roll)
+-- ==========================================
+
 local function AddDropdown(parent, list, stateTable, key)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(1, 0, 0, 35)
     btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
     
-    -- Se o State estiver vazio, usa o primeiro item da lista da Database
     if stateTable[key] == "" or stateTable[key] == nil then
         stateTable[key] = list[1]
     end
     btn.Text = stateTable[key]
-
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 10
-    box.ClipsDescendants = true
+    btn.ClipsDescendants = true -- Corrigido de 'box' para 'btn'
     Instance.new("UICorner", btn)
 
     btn.MouseButton1Click:Connect(function()
@@ -331,6 +340,52 @@ local t_rollCard = CreateCard("Torre", "TOWER ROLL")
 AddTextBox(t_rollCard, "Nome do Personagem", State.Tower, "Target")
 AddToggle(t_rollCard, "INICIAR ROLL", State.Tower, "Active", "T_Roll.lua")
 
+-- 3. CARD SET TOWER
+local itemCard = CreateCard("Torre", "SET TOWER")
+
+-- Dropdown manual para Ação (Não precisa de Database)
+AddDropdown(itemCard, {"Roll", "Upgrade"}, State.Tower, "ItemAction")
+
+-- Dropdowns que puxam automaticamente da sua Database
+AddDropdown(itemCard, Database.Items, State.Tower, "ItemTarget")
+AddDropdown(itemCard, Database.Materials, State.Tower, "MaterialTarget")
+
+-- Botão Inteligente (Híbrido)
+local actionBtn = Instance.new("TextButton", itemCard)
+actionBtn.Size = UDim2.new(1, 0, 0, 30)
+actionBtn.BackgroundColor3 = COR_VERMELHO
+actionBtn.Text = "EXECUTAR"
+actionBtn.TextColor3 = Color3.new(1, 1, 1)
+actionBtn.Font = Enum.Font.GothamBold
+actionBtn.TextSize = 10
+Instance.new("UICorner", actionBtn)
+
+actionBtn.MouseButton1Click:Connect(function()
+    -- Lógica baseada na escolha da primeira Dropdown
+    if State.Tower.ItemAction == "Roll" then
+        -- Comportamento: TOGGLE
+        State.Tower.ItemLoopActive = not State.Tower.ItemLoopActive
+        
+        if State.Tower.ItemLoopActive then
+            actionBtn.BackgroundColor3 = COR_VERDE
+            actionBtn.Text = "ROLL: ON"
+            LoadScript("I_Roll.lua")
+        else
+            actionBtn.BackgroundColor3 = COR_VERMELHO
+            actionBtn.Text = "ROLL: OFF"
+        end
+    else
+        -- Comportamento: BOTÃO SIMPLES
+        actionBtn.BackgroundColor3 = COR_VERDE
+        actionBtn.Text = "UPGRADING..."
+        
+        LoadScript("I_Upgrade.lua")
+        
+        task.wait(1.5) -- Feedback visual
+        actionBtn.BackgroundColor3 = COR_VERMELHO
+        actionBtn.Text = "EXECUTAR"
+    end
+end)
 
 -- ==========================================
 -- ⚔️ ABA: INVASÃO
