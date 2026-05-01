@@ -21,8 +21,15 @@ _G.HubState = _G.HubState or {
     Vote = { Selected = "Ninja", Auto = false },
     Exp = { Name = "", Type = "Common", Amount = "1" },
     Manga = { Name = "" },
+    RaidAFK = { Active = false, Decks = {} },
     Trial = {}
 }
+-- Inicialização Automática dos Decks no State
+for _, name in pairs(Database.Decks) do
+    if not _G.HubState.RaidAFK.Decks[name] then
+        _G.HubState.RaidAFK.Decks[name] = {char1 = "", char2 = "", char3 = ""}
+    end
+end
 local State = _G.HubState
 
 -- ==========================================
@@ -402,6 +409,74 @@ local function AddSearchBox(parent, placeholder, list, stateTable, key, order, h
 end
 
 -- ==========================================
+-- 8. GESTOR DE DECKS (ESPECIAL)
+-- ==========================================
+local function AddDeckManager(parent, listCard, h)
+    local state = _G.HubState.RaidAFK
+    
+    local container = Instance.new("Frame", parent)
+    container.LayoutOrder = 1
+    container.Size = UDim2.new(1, 0, 0, h or 35)
+    container.BackgroundTransparency = 1
+
+    local mainTrigger = Instance.new("TextButton", container)
+    mainTrigger.Size = UDim2.new(1, 0, 1, 0)
+    mainTrigger.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+    mainTrigger.Text = "🔍 Abrir Decks / Pesquisar"
+    mainTrigger.TextColor3 = Color3.new(1, 1, 1)
+    mainTrigger.Font = Enum.Font.GothamBold
+    mainTrigger.TextSize = 11
+    Instance.new("UICorner", mainTrigger)
+
+    local searchBar = Instance.new("TextBox", container)
+    searchBar.Size = UDim2.new(0, 0, 1, 0)
+    searchBar.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+    searchBar.PlaceholderText = "Pesquisar..."
+    searchBar.Text = ""
+    searchBar.TextColor3 = Color3.new(1,1,1)
+    searchBar.Font = Enum.Font.Gotham
+    searchBar.Visible = false
+    searchBar.ClipsDescendants = true
+    Instance.new("UICorner", searchBar)
+
+    -- Lógica de Abrir/Fechar
+    local isOpened = false
+    mainTrigger.MouseButton1Click:Connect(function()
+        isOpened = not isOpened
+        listCard.Visible = isOpened
+        
+        if isOpened then
+            mainTrigger:TweenPosition(UDim2.new(0.85, 0, 0, 0), "Out", "Quad", 0.2, true)
+            mainTrigger:TweenSize(UDim2.new(0.15, 0, 1, 0), "Out", "Quad", 0.2, true)
+            mainTrigger.Text = "X"
+            searchBar.Visible = true
+            searchBar:TweenSize(UDim2.new(0.83, 0, 1, 0), "Out", "Quad", 0.2, true)
+        else
+            mainTrigger:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.2, true)
+            mainTrigger:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.2, true)
+            mainTrigger.Text = "🔍 Abrir Decks / Pesquisar"
+            searchBar.Text = ""
+            searchBar:TweenSize(UDim2.new(0, 0, 1, 0), "Out", "Quad", 0.2, true)
+            task.wait(0.2)
+            searchBar.Visible = false
+        end
+    end)
+
+    -- Filtro de Pesquisa (Busca os itens dentro do ScrollingFrame do card de lista)
+    searchBar:GetPropertyChangedSignal("Text"):Connect(function()
+        local txt = searchBar.Text:lower()
+        local scroll = listCard:FindFirstChildOfClass("ScrollingFrame")
+        if not scroll then return end
+        
+        for _, item in pairs(scroll:GetChildren()) do
+            if item:IsA("Frame") then
+                item.Visible = (txt == "" or item.Name:lower():find(txt))
+            end
+        end
+    end)
+end
+
+-- ==========================================
 -- 🌍 ABA: GLOBAL
 -- ==========================================
 
@@ -481,6 +556,79 @@ AddTimedButton(levelCard, "UPAR", "Exp.lua", 4, 29)
 local mangaCard = CreateCard("Invasão", "MANGA")
 AddTextBox(mangaCard, "Nome do Personagem", State.Manga, "Name", 1, 27)
 AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 29)
+
+-- 5. CARD AUTO RAID AFK
+local raidAfkCard = CreateCard("Invasão", "AUTO RAID AFK")
+local listCard = CreateCard("Invasão", "LISTA DE DECKS")
+listCard.Visible = false
+
+-- Adiciona o botão de controle
+AddDeckManager(raidAfkCard, listCard, 35)
+AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
+
+-- Criar o ScrollingFrame dentro do listCard
+local scroll = Instance.new("ScrollingFrame", listCard)
+scroll.Size = UDim2.new(1, -10, 1, -10)
+scroll.Position = UDim2.new(0, 5, 0, 5)
+scroll.BackgroundTransparency = 1
+scroll.ScrollBarThickness = 4
+scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+
+local layout = Instance.new("UIListLayout", scroll)
+layout.Padding = UDim.new(0, 5)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+-- Gerar os itens da lista
+for _, name in pairs(Database.Decks) do
+    local itemFrame = Instance.new("Frame", scroll)
+    itemFrame.Name = name
+    itemFrame.Size = UDim2.new(0.95, 0, 0, 30)
+    itemFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+    itemFrame.ClipsDescendants = true
+    Instance.new("UICorner", itemFrame)
+
+    local btn = Instance.new("TextButton", itemFrame)
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.BackgroundTransparency = 1
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 10
+
+    -- Container dos Inputs (Escondido inicialmente)
+    local inputCont = Instance.new("Frame", itemFrame)
+    inputCont.Size = UDim2.new(1, 0, 0, 85)
+    inputCont.Position = UDim2.new(0, 0, 0, 30)
+    inputCont.BackgroundTransparency = 1
+    Instance.new("UIListLayout", inputCont).Padding = UDim.new(0, 2)
+
+    -- Função interna para criar os inputs de personagem
+    local function AddCharInput(slot, placeholder)
+        local i = Instance.new("TextBox", inputCont)
+        i.Size = UDim2.new(0.9, 0, 0, 25)
+        i.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+        i.PlaceholderText = placeholder
+        i.Text = State.RaidAFK.Decks[name][slot]
+        i.TextColor3 = Color3.new(1, 1, 1)
+        i.Font = Enum.Font.Gotham
+        i.TextSize = 10
+        Instance.new("UICorner", i)
+        i.FocusLost:Connect(function() State.RaidAFK.Decks[name][slot] = i.Text end)
+    end
+
+    AddCharInput("char1", "Personagem 1")
+    AddCharInput("char2", "Personagem 2")
+    AddCharInput("char3", "Personagem 3")
+
+    -- Lógica de Expandir
+    local aberto = false
+    btn.MouseButton1Click:Connect(function()
+        aberto = not aberto
+        itemFrame:TweenSize(aberto and UDim2.new(0.95, 0, 0, 120) or UDim2.new(0.95, 0, 0, 30), "Out", "Quad", 0.2, true)
+        task.wait(0.2)
+        scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
+    end)
+end
 
 -- ==========================================
 -- 📑 TABS
