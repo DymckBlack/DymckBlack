@@ -157,6 +157,10 @@ createPage("Trial")
 -- 🧩 CARD PADRÃO (CORRIGIDO)
 -- ==========================================
 
+-- ==========================================
+-- 🧩 CARD PADRÃO (VERSÃO COM ORDEM MANUAL)
+-- ==========================================
+
 local function CreateCard(page, title)
     local card = Instance.new("Frame", pages[page])
     card.Size = UDim2.new(0,120,0,160)
@@ -165,6 +169,39 @@ local function CreateCard(page, title)
     card.BorderColor3 = Color3.fromRGB(40,40,45)
     Instance.new("UICorner", card)
 
+    -- Título do Card
+    local label = Instance.new("TextLabel", card)
+    label.Size = UDim2.new(1,0,0,30)
+    label.BackgroundTransparency = 1
+    label.Text = title
+    label.TextColor3 = COR_AZUL
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 14
+
+    -- Container interno para os componentes
+    local container = Instance.new("Frame", card)
+    container.Size = UDim2.new(1,-10,1,-35)
+    container.Position = UDim2.new(0,5,0,30)
+    container.BackgroundTransparency = 1
+
+    local layout = Instance.new("UIListLayout", container)
+    layout.Padding = UDim.new(0,5)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    
+    -- ✅ ESTA É A LINHA CHAVE:
+    -- Agora todos os cards aceitam a numeração 'order' nos componentes
+    layout.SortOrder = Enum.SortOrder.LayoutOrder 
+
+    return container
+end
+
+--local function CreateCard(page, title)
+    --local card = Instance.new("Frame", pages[page])
+    --card.Size = UDim2.new(0,120,0,160)
+    --card.BackgroundColor3 = COR_FUNDO
+    --card.BorderSizePixel = 1
+   --card.BorderColor3 = Color3.fromRGB(40,40,45)
+    --Instance.new("UICorner", card)
 
 -- ==========================================
     -- Título
@@ -194,7 +231,7 @@ local function CreateCard(page, title)
 end
 
 -- ==========================================
--- 🔧 COMPONENTES (VERSÃO 2.0)
+-- 🔧 COMPONENTES (VERSÃO 2.1 - ESTÁVEL)
 -- ==========================================
 
 local function LoadScript(name)
@@ -207,19 +244,18 @@ local function LoadScript(name)
 end
 
 -- ==========================================
--- 1. Botão Liga/Desliga
+-- 1. Botão Liga/Desliga (Toggle)
 -- ==========================================
-
-local function AddToggle(parent, text, stateTable, key, scriptName)
+local function AddToggle(parent, text, stateTable, key, scriptName, order)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 35)
+    btn.LayoutOrder = order or 0
+    btn.Size = UDim2.new(1, 0, 0, 27)
     btn.Text = text
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 11
+    btn.TextSize = 10
     Instance.new("UICorner", btn)
 
-    -- Inicia com a cor correta baseada no State
     btn.BackgroundColor3 = stateTable[key] and COR_VERDE or COR_VERMELHO
 
     btn.MouseButton1Click:Connect(function()
@@ -233,33 +269,34 @@ local function AddToggle(parent, text, stateTable, key, scriptName)
 end
 
 -- ==========================================
--- 2. Botão de Clique Único (Ex: Join, Teleport, Votar)
+-- 2. Botão de Clique Único (Timed)
 -- ==========================================
-
-local function AddTimedButton(parent, text, scriptName)
+local function AddTimedButton(parent, text, scriptName, order)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 35)
+    btn.LayoutOrder = order or 0
+    btn.Size = UDim2.new(1, 0, 0, 27)
     btn.BackgroundColor3 = COR_VERMELHO
     btn.Text = text
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 11
+    btn.TextSize = 10
     Instance.new("UICorner", btn)
 
     btn.MouseButton1Click:Connect(function()
         btn.BackgroundColor3 = COR_VERDE
         if scriptName then LoadScript(scriptName) end
-        task.wait(1) -- Feedback visual rápido
+        task.wait(1)
         btn.BackgroundColor3 = COR_VERMELHO
     end)
 end
 
 -- ==========================================
--- 3. Caixa de Texto
+-- 3. Caixa de Texto (TextBox)
 -- ==========================================
-local function AddTextBox(parent, placeholder, stateTable, key)
+local function AddTextBox(parent, placeholder, stateTable, key, order)
     local box = Instance.new("TextBox", parent)
-    box.Size = UDim2.new(1, 0, 0, 35)
+    box.LayoutOrder = order or 0
+    box.Size = UDim2.new(1, 0, 0, 27)
     box.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
     box.PlaceholderText = placeholder
     box.Text = stateTable[key] or ""
@@ -275,11 +312,11 @@ local function AddTextBox(parent, placeholder, stateTable, key)
 end
 
 -- ==========================================
--- 4. Menu de Escolha
+-- 4. Menu de Escolha (Dropdown)
 -- ==========================================
-
-local function AddDropdown(parent, list, stateTable, key)
+local function AddDropdown(parent, list, stateTable, key, order)
     local btn = Instance.new("TextButton", parent)
+    btn.LayoutOrder = order or 0
     btn.Size = UDim2.new(1, 0, 0, 27)
     btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
     
@@ -290,7 +327,7 @@ local function AddDropdown(parent, list, stateTable, key)
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 10
-    btn.ClipsDescendants = true -- Corrigido de 'box' para 'btn'
+    btn.ClipsDescendants = true 
     Instance.new("UICorner", btn)
 
     btn.MouseButton1Click:Connect(function()
@@ -304,11 +341,11 @@ local function AddDropdown(parent, list, stateTable, key)
 end
 
 -- ==========================================
--- 5. Botão Híbrido (Troca entre Toggle e Execução Única)
+-- 5. Botão Híbrido (Toggle/Execução)
 -- ==========================================
-
-local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, scriptRoll, scriptUpgrade)
+local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, scriptRoll, scriptUpgrade, order)
     local btn = Instance.new("TextButton", parent)
+    btn.LayoutOrder = order or 0
     btn.Size = UDim2.new(1, 0, 0, 27)
     btn.BackgroundColor3 = COR_VERMELHO
     btn.Text = text
@@ -318,7 +355,6 @@ local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, s
     Instance.new("UICorner", btn)
 
     btn.MouseButton1Click:Connect(function()
-        -- Se a ação no State for "Roll", ele age como Toggle
         if stateTable[actionKey] == "Roll" then
             stateTable[activeKey] = not stateTable[activeKey]
             btn.BackgroundColor3 = stateTable[activeKey] and COR_VERDE or COR_VERMELHO
@@ -328,7 +364,6 @@ local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, s
                 LoadScript(scriptRoll)
             end
         else
-            -- Se for qualquer outra coisa (Upgrade), age como clique único
             btn.BackgroundColor3 = COR_VERDE
             btn.Text = "EXECUTANDO..."
             LoadScript(scriptUpgrade)
@@ -338,16 +373,15 @@ local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, s
             btn.Text = text
         end
     end)
-    return btn
 end
 
 -- ==========================================
--- 6. Botões Duplos (JOIN/TELEPORT ou Similares)
+-- 6. Botões Duplos (Lado a Lado)
 -- ==========================================
-
-local function AddDoubleButtons(parent, text1, script1, text2, callback2)
+local function AddDoubleButtons(parent, text1, script1, text2, callback2, order)
     local container = Instance.new("Frame", parent)
-    container.Size = UDim2.new(1, 0, 0, 25)
+    container.LayoutOrder = order or 0
+    container.Size = UDim2.new(1, 0, 0, 27)
     container.BackgroundTransparency = 1
 
     local layout = Instance.new("UIListLayout", container)
@@ -373,8 +407,8 @@ local function AddDoubleButtons(parent, text1, script1, text2, callback2)
         end)
     end
 
-    CreateMiniBtn(text1, true, script1)   -- Botão 1: Carrega Script
-    CreateMiniBtn(text2, false, callback2) -- Botão 2: Executa Função Local
+    CreateMiniBtn(text1, true, script1)
+    CreateMiniBtn(text2, false, callback2)
 end
 
 -- ==========================================
@@ -426,18 +460,23 @@ AddHybridButton(itemCard, "EXECUTAR", State.Tower, "ItemAction", "ItemLoopActive
 -- ==========================================
 
 local raidCard = CreateCard("Invasão", "RAID")
-AddTextBox(raidCard, "Personagem 1", State.Raid, "Char1")
-AddTextBox(raidCard, "Personagem 2", State.Raid, "Char2")
-AddTextBox(raidCard, "Personagem 3", State.Raid, "Char3")
 
+-- 1. Inputs (Ordem 1, 2, 3)
+AddTextBox(raidCard, "Personagem 1", State.Raid, "Char1", 1)
+AddTextBox(raidCard, "Personagem 2", State.Raid, "Char2", 2)
+AddTextBox(raidCard, "Personagem 3", State.Raid, "Char3", 3)
+
+-- 2. Botões (Ordem 4 - Sempre ficará embaixo)
 AddDoubleButtons(raidCard, 
     "JOIN", "Raid.lua", 
     "TELEPORT", function()
         local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-        if root then root.CFrame = CFrame.new(-533.24, -114.05, -208.06) end
-    end
+        if root then 
+            root.CFrame = CFrame.new(-533.24, -114.05, -208.06) 
+        end
+    end, 
+    4
 )
-
 
 -- ==========================================
 -- 📑 TABS
