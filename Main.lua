@@ -165,6 +165,9 @@ local function CreateCard(page, title)
     card.BorderColor3 = Color3.fromRGB(40,40,45)
     Instance.new("UICorner", card)
 
+-- ==========================================
+-- Título
+-- ==========================================
     local label = Instance.new("TextLabel", card)
     label.Size = UDim2.new(1,0,0,30)
     label.BackgroundTransparency = 1
@@ -172,6 +175,10 @@ local function CreateCard(page, title)
     label.TextColor3 = COR_AZUL
     label.Font = Enum.Font.GothamBold
     label.TextSize = 14
+
+-- ==========================================
+-- Container interno
+-- ==========================================
 
     local container = Instance.new("Frame", card)
     container.Size = UDim2.new(1,-10,1,-35)
@@ -183,33 +190,6 @@ local function CreateCard(page, title)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     layout.SortOrder = Enum.SortOrder.LayoutOrder 
 
-    return container
-end
-
--- ==========================================
-    -- Título
--- ==========================================
-
-    local label = Instance.new("TextLabel", card)
-    label.Size = UDim2.new(1,0,0,30)
-    label.BackgroundTransparency = 1
-    label.Text = title
-    label.TextColor3 = COR_AZUL
-    label.Font = Enum.Font.GothamBold
-    label.TextSize = 14
-
--- ==========================================
-    -- Container interno
--- ==========================================
-
-    local container = Instance.new("Frame", card)
-    container.Size = UDim2.new(1,-10,1,-35)
-    container.Position = UDim2.new(0,5,0,30)
-    container.BackgroundTransparency = 1
-
-    local layout = Instance.new("UIListLayout", container)
-    layout.Padding = UDim.new(0,5)
-    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     return container
 end
 
@@ -314,7 +294,7 @@ local function AddDropdown(parent, list, stateTable, key, order)
     Instance.new("UICorner", btn)
 
     btn.MouseButton1Click:Connect(function()
-        local currentPos = table.find(list, btn.Text) or 1
+        local currentPos = table.find(list, stateTable[key]) or 1
         local nextPos = currentPos + 1
         if nextPos > #list then nextPos = 1 end
         
