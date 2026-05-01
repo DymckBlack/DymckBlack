@@ -1,7 +1,9 @@
--- [[ DYMCK HUB - CASH SCRIPT (BACKEND ATUALIZADO) ]]
--- Integrado ao novo HubState
+-- [[ DYMCK HUB - CASH SCRIPT (DIAGNÓSTICO) ]]
+-- Este script imprimirá informações no console (F9) para descobrirmos o erro.
 
-if _G.CashLoaded then return end 
+if _G.CashLoaded then 
+    print("⚠️ CASH: O script já estava carregado. Verifique se as alterações no GitHub foram salvas.")
+end 
 _G.CashLoaded = true
 
 local Players = game:GetService("Players")
@@ -25,7 +27,11 @@ local PlotPositions = {
 
 local function GetMyPlotByPos()
     local root = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    if not root then return nil end
+    if not root then 
+        print("❌ CASH: RootPart não encontrado. O personagem está vivo?")
+        return nil 
+    end
+    
     local closestNum = nil
     local shortestDist = math.huge
     for num, pos in pairs(PlotPositions) do
@@ -35,6 +41,12 @@ local function GetMyPlotByPos()
             closestNum = num
         end
     end
+    
+    -- Se a distância for muito grande (ex: > 50 studs), talvez as coordenadas mudaram
+    if shortestDist > 50 then
+        print("⚠️ CASH: Plot mais próximo está muito longe (" .. math.floor(shortestDist) .. " studs).")
+    end
+    
     return closestNum
 end
 
@@ -43,20 +55,24 @@ task.spawn(function()
     local CardRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Card")
     local Plots = workspace:WaitForChild("Plots")
     
-    print("DymckHUB: Loop de CASH iniciado e vinculado ao HubState.")
+    print("✅ DymckHUB: Loop de CASH iniciado.")
 
     while true do
-        -- AQUI A MUDANÇA CRÍTICA: Agora checa o State.CashActive
-        if State.CashActive then
+        -- Verifica se o State existe e se o CashActive está ON
+        if State and State.CashActive then
+            
             if not SavedPlotNumber then 
+                print("🔍 CASH: Tentando identificar seu Plot...")
                 SavedPlotNumber = GetMyPlotByPos() 
                 if SavedPlotNumber then
-                    print("DymckHUB: Plot identificado: " .. SavedPlotNumber)
+                    print("🎯 CASH: Plot identificado com sucesso: " .. SavedPlotNumber)
+                else
+                    print("❌ CASH: Não foi possível identificar seu Plot pela posição.")
                 end
             end
 
             if SavedPlotNumber then
-                pcall(function()
+                local sucesso, erro = pcall(function()
                     local plot = Plots:FindFirstChild(tostring(SavedPlotNumber))
                     if plot then
                         local display = plot.Map:FindFirstChild("Display")
@@ -73,8 +89,14 @@ task.spawn(function()
                                 end
                             end
                         end
+                    else
+                        print("❌ CASH: Objeto do Plot " .. SavedPlotNumber .. " não encontrado no Workspace.")
                     end
                 end)
+                
+                if not sucesso then
+                    print("🔥 CASH: Erro interno na coleta: " .. tostring(erro))
+                end
 
                 task.wait(1.8) 
 
@@ -84,12 +106,16 @@ task.spawn(function()
 
                 task.wait(1.8) 
             else
-                task.wait(2)
-                SavedPlotNumber = GetMyPlotByPos()
+                task.wait(5) -- Espera mais tempo se não achar o plot
             end
         else
+            -- Se o State não existir ou CashActive for false
+            if not State then
+                print("⚠️ CASH: HubState é nulo (nil). O Main carregou?")
+                State = _G.HubState
+            end
             SavedPlotNumber = nil
-            task.wait(1) 
+            task.wait(2) 
         end
     end
 end)
