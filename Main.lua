@@ -342,6 +342,42 @@ local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, s
 end
 
 -- ==========================================
+-- 6. Botões Duplos (JOIN/TELEPORT ou Similares)
+-- ==========================================
+
+local function AddDoubleButtons(parent, text1, script1, text2, callback2)
+    local container = Instance.new("Frame", parent)
+    container.Size = UDim2.new(1, 0, 0, 25)
+    container.BackgroundTransparency = 1
+
+    local layout = Instance.new("UIListLayout", container)
+    layout.FillDirection = Enum.FillDirection.Horizontal
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.Padding = UDim.new(0, 5)
+
+    local function CreateMiniBtn(txt, isScript, action)
+        local btn = Instance.new("TextButton", container)
+        btn.Size = UDim2.new(0.5, -3, 1, 0)
+        btn.BackgroundColor3 = COR_VERMELHO
+        btn.Text = txt
+        btn.TextColor3 = Color3.new(1, 1, 1)
+        btn.Font = Enum.Font.GothamBold
+        btn.TextSize = 9
+        Instance.new("UICorner", btn)
+
+        btn.MouseButton1Click:Connect(function()
+            btn.BackgroundColor3 = COR_VERDE
+            if isScript then LoadScript(action) else action() end
+            task.wait(1)
+            btn.BackgroundColor3 = COR_VERMELHO
+        end)
+    end
+
+    CreateMiniBtn(text1, true, script1)   -- Botão 1: Carrega Script
+    CreateMiniBtn(text2, false, callback2) -- Botão 2: Executa Função Local
+end
+
+-- ==========================================
 -- 🌍 ABA: GLOBAL
 -- ==========================================
 
@@ -389,10 +425,18 @@ AddHybridButton(itemCard, "EXECUTAR", State.Tower, "ItemAction", "ItemLoopActive
 -- ⚔️ ABA: INVASÃO
 -- ==========================================
 
-local raidCard = CreateCard("Invasão", "AUTO RAID")
+local raidCard = CreateCard("Invasão", "RAID")
+AddTextBox(raidCard, "Personagem 1", State.Raid, "Char1")
+AddTextBox(raidCard, "Personagem 2", State.Raid, "Char2")
+AddTextBox(raidCard, "Personagem 3", State.Raid, "Char3")
 
-AddToggle(raidCard, "AUTO RAID", State.Raid, "Auto", "Raid_Afk.lua")
-
+AddDoubleButtons(raidCard, 
+    "JOIN", "Raid.lua", 
+    "TELEPORT", function()
+        local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+        if root then root.CFrame = CFrame.new(-533.24, -114.05, -208.06) end
+    end
+)
 
 
 -- ==========================================
