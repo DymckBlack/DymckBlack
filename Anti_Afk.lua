@@ -1,4 +1,4 @@
--- [[ DYMCK HUB - ANTI-AFK (VERSÃO ESTÁVEL) ]]
+-- [[ DYMCK HUB - ANTI-AFK (VERSÃO ESTÁVEL + FIX LOG ERROR) ]]
 
 -- 1. TRAVA DE SEGURANÇA (IMPEDE MULTIPLICAÇÃO)
 if _G.AntiAFKRunning then 
@@ -28,11 +28,11 @@ task.spawn(function()
             local success, err = pcall(function()
                 print("🛡️ ANTI-AFK: Simulando movimento para manter conexão...")
                 
-                -- Simula o pressionar da tecla "W" por um curto tempo
+                -- ATUALIZAÇÃO: Usando string "w" em vez de EnumItem para evitar erro no log
                 VirtualUser:CaptureController()
-                VirtualUser:SetKeyDown(Enum.KeyCode.W)
+                VirtualUser:SetKeyDown("w")
                 task.wait(0.5) -- Um passinho de meio segundo
-                VirtualUser:SetKeyUp(Enum.KeyCode.W)
+                VirtualUser:SetKeyUp("w")
             end)
 
             if not success then
@@ -42,19 +42,22 @@ task.spawn(function()
             -- Espera 10 minutos (600 segundos) antes de repetir
             task.wait(600)
         else
-            -- Se estiver desligado, espera um pouco e checa de novo
+            -- Se estiver desligado, espera um pouco e checa de novo (standby)
             task.wait(2)
         end
     end
 end)
 
 -- 3. EVENTO EXTRA (SEGURANÇA REDOBRADA)
--- Caso o Roblox tente te desconectar por inatividade antes dos 10 min
+-- Caso o Roblox tente te desconectar por inatividade antes do loop de 10 min
 lp.Idled:Connect(function()
     if _G.HubState and _G.HubState.AntiAFKActive then
-        VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-        task.wait(0.2)
-        VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-        print("🛡️ ANTI-AFK: Idle detectado, sinal de vida enviado.")
+        pcall(function()
+            -- Simula um clique do botão direito do mouse na câmera
+            VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            task.wait(0.2)
+            VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            print("🛡️ ANTI-AFK: Idle detectado, sinal de vida enviado via Mouse2.")
+        end)
     end
 end)
