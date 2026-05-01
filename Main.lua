@@ -194,7 +194,7 @@ local function CreateCard(page, title)
 end
 
 -- ==========================================
--- 🔧 COMPONENTES (VERSÃO 2.1 - ESTÁVEL)
+-- 🔧 COMPONENTES (VERSÃO 2.2 - FLEXÍVEL)
 -- ==========================================
 
 local function LoadScript(name)
@@ -206,13 +206,11 @@ local function LoadScript(name)
     end)
 end
 
--- ==========================================
 -- 1. Botão Liga/Desliga (Toggle)
--- ==========================================
-local function AddToggle(parent, text, stateTable, key, scriptName, order)
+local function AddToggle(parent, text, stateTable, key, scriptName, order, h)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
-    btn.Size = UDim2.new(1, 0, 0, 27)
+    btn.Size = UDim2.new(1, 0, 0, h or 27)
     btn.Text = text
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.GothamBold
@@ -224,20 +222,15 @@ local function AddToggle(parent, text, stateTable, key, scriptName, order)
     btn.MouseButton1Click:Connect(function()
         stateTable[key] = not stateTable[key]
         btn.BackgroundColor3 = stateTable[key] and COR_VERDE or COR_VERMELHO
-        
-        if stateTable[key] and scriptName then
-            LoadScript(scriptName)
-        end
+        if stateTable[key] and scriptName then LoadScript(scriptName) end
     end)
 end
 
--- ==========================================
 -- 2. Botão de Clique Único (Timed)
--- ==========================================
-local function AddTimedButton(parent, text, scriptName, order)
+local function AddTimedButton(parent, text, scriptName, order, h)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
-    btn.Size = UDim2.new(1, 0, 0, 27)
+    btn.Size = UDim2.new(1, 0, 0, h or 27)
     btn.BackgroundColor3 = COR_VERMELHO
     btn.Text = text
     btn.TextColor3 = Color3.new(1, 1, 1)
@@ -253,13 +246,11 @@ local function AddTimedButton(parent, text, scriptName, order)
     end)
 end
 
--- ==========================================
 -- 3. Caixa de Texto (TextBox)
--- ==========================================
-local function AddTextBox(parent, placeholder, stateTable, key, order)
+local function AddTextBox(parent, placeholder, stateTable, key, order, h)
     local box = Instance.new("TextBox", parent)
     box.LayoutOrder = order or 0
-    box.Size = UDim2.new(1, 0, 0, 27)
+    box.Size = UDim2.new(1, 0, 0, h or 27)
     box.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
     box.PlaceholderText = placeholder
     box.Text = stateTable[key] or ""
@@ -274,13 +265,11 @@ local function AddTextBox(parent, placeholder, stateTable, key, order)
     end)
 end
 
--- ==========================================
 -- 4. Menu de Escolha (Dropdown)
--- ==========================================
-local function AddDropdown(parent, list, stateTable, key, order)
+local function AddDropdown(parent, list, stateTable, key, order, h)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
-    btn.Size = UDim2.new(1, 0, 0, 27)
+    btn.Size = UDim2.new(1, 0, 0, h or 27)
     btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
     
     if stateTable[key] == "" or stateTable[key] == nil then
@@ -297,19 +286,16 @@ local function AddDropdown(parent, list, stateTable, key, order)
         local currentPos = table.find(list, stateTable[key]) or 1
         local nextPos = currentPos + 1
         if nextPos > #list then nextPos = 1 end
-        
         stateTable[key] = list[nextPos]
         btn.Text = list[nextPos]
     end)
 end
 
--- ==========================================
 -- 5. Botão Híbrido (Toggle/Execução)
--- ==========================================
-local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, scriptRoll, scriptUpgrade, order)
+local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, scriptRoll, scriptUpgrade, order, h)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
-    btn.Size = UDim2.new(1, 0, 0, 27)
+    btn.Size = UDim2.new(1, 0, 0, h or 27)
     btn.BackgroundColor3 = COR_VERMELHO
     btn.Text = text
     btn.TextColor3 = Color3.new(1, 1, 1)
@@ -322,15 +308,11 @@ local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, s
             stateTable[activeKey] = not stateTable[activeKey]
             btn.BackgroundColor3 = stateTable[activeKey] and COR_VERDE or COR_VERMELHO
             btn.Text = stateTable[activeKey] and "ROLL: ON" or "ROLL: OFF"
-            
-            if stateTable[activeKey] then
-                LoadScript(scriptRoll)
-            end
+            if stateTable[activeKey] then LoadScript(scriptRoll) end
         else
             btn.BackgroundColor3 = COR_VERDE
             btn.Text = "EXECUTANDO..."
             LoadScript(scriptUpgrade)
-            
             task.wait(1.5)
             btn.BackgroundColor3 = COR_VERMELHO
             btn.Text = text
@@ -338,13 +320,11 @@ local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, s
     end)
 end
 
--- ==========================================
 -- 6. Botões Duplos (Lado a Lado)
--- ==========================================
-local function AddDoubleButtons(parent, text1, script1, text2, callback2, order)
+local function AddDoubleButtons(parent, text1, script1, text2, callback2, order, h)
     local container = Instance.new("Frame", parent)
     container.LayoutOrder = order or 0
-    container.Size = UDim2.new(1, 0, 0, 27)
+    container.Size = UDim2.new(1, 0, 0, h or 27)
     container.BackgroundTransparency = 1
 
     local layout = Instance.new("UIListLayout", container)
@@ -369,18 +349,15 @@ local function AddDoubleButtons(parent, text1, script1, text2, callback2, order)
             btn.BackgroundColor3 = COR_VERMELHO
         end)
     end
-
     CreateMiniBtn(text1, true, script1)
     CreateMiniBtn(text2, false, callback2)
 end
 
--- ==========================================
--- 7. Caixa de Busca Inteligente (Novo!)
--- ==========================================
-local function AddSearchBox(parent, placeholder, list, stateTable, key, order)
+-- 7. Caixa de Busca Inteligente
+local function AddSearchBox(parent, placeholder, list, stateTable, key, order, h)
     local container = Instance.new("Frame", parent)
     container.LayoutOrder = order or 0
-    container.Size = UDim2.new(1, 0, 0, 52)
+    container.Size = UDim2.new(1, 0, 0, h or 52)
     container.BackgroundTransparency = 1
 
     local layout = Instance.new("UIListLayout", container)
@@ -388,7 +365,7 @@ local function AddSearchBox(parent, placeholder, list, stateTable, key, order)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
     local box = Instance.new("TextBox", container)
-    box.Size = UDim2.new(1, 0, 0, 27)
+    box.Size = UDim2.new(1, 0, 0, (h and h*0.5) or 27)
     box.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
     box.PlaceholderText = placeholder
     box.Text = ""
@@ -398,7 +375,7 @@ local function AddSearchBox(parent, placeholder, list, stateTable, key, order)
     Instance.new("UICorner", box)
 
     local label = Instance.new("TextLabel", container)
-    label.Size = UDim2.new(1, 0, 0, 20)
+    label.Size = UDim2.new(1, 0, 0, (h and h*0.4) or 20)
     label.BackgroundTransparency = 1
     label.RichText = true
     label.Font = Enum.Font.GothamBold
@@ -430,23 +407,21 @@ end
 
 -- 1. CARD CASH
 local cashCard = CreateCard("Global", "CASH")
-AddToggle(cashCard, "ON/OFF", State, "CashActive", "Cash.lua")
+AddToggle(cashCard, "ON/OFF", State, "CashActive", "Cash.lua", 1, 35)
 
 -- 2. CARD COLLECT
 local collectCard = CreateCard("Global", "COLLECT")
-AddTimedButton(collectCard, "Coletar Agora", "Collect.lua")
-AddToggle(collectCard, "Coleta AFK", State, "AutoCollectActive", "Collect.lua")
+AddTimedButton(collectCard, "Coletar Agora", "Collect.lua", 1, 35)
+AddToggle(collectCard, "Coleta AFK", State, "AutoCollectActive", "Collect.lua", 2, 35)
 
 -- 3. CARD ROLL
 local rollCard = CreateCard("Global", "ROLL UR")
--- Sincronizado com State.Roll.Target
-AddTextBox(rollCard, "Nome do Personagem", State.Roll, "Target") 
--- Sincronizado com State.Roll.Active
-AddToggle(rollCard, "INICIAR ROLL", State.Roll, "Active", "Grade.lua")
+AddTextBox(rollCard, "Nome do Personagem", State.Roll, "Target", 1, 35)
+AddToggle(rollCard, "INICIAR ROLL", State.Roll, "Active", "Grade.lua", 2, 35)
 
 -- 4. CARD ANTI AFK
 local afkCard = CreateCard("Global", "Anti-AFK")
-AddToggle(afkCard, "ANTI AFK", State, "AntiAFKActive", "Anti_Afk.lua")
+AddToggle(afkCard, "ANTI AFK", State, "AntiAFKActive", "Anti_Afk.lua", 1, 35)
 
 -- ==========================================
 -- 🏰 ABA: TORRE
@@ -454,19 +429,19 @@ AddToggle(afkCard, "ANTI AFK", State, "AntiAFKActive", "Anti_Afk.lua")
 
 -- 1. CARD TOWER
 local towerCard = CreateCard("Torre", "TOWER")
-AddTimedButton(towerCard, "Iniciar Torre", "Tower.lua")
+AddTimedButton(towerCard, "Iniciar Torre", "Tower.lua", 1, 35)
 
 -- 2. CARD TOWER ROLL
 local t_rollCard = CreateCard("Torre", "TOWER ROLL")
-AddTextBox(t_rollCard, "Nome do Personagem", State.Tower, "Target")
-AddToggle(t_rollCard, "INICIAR ROLL", State.Tower, "Active", "T_Roll.lua")
+AddTextBox(t_rollCard, "Nome do Personagem", State.Tower, "Target", 1, 35)
+AddToggle(t_rollCard, "INICIAR ROLL", State.Tower, "Active", "T_Roll.lua", 2, 35)
 
 -- 3. CARD SET TOWER
 local itemCard = CreateCard("Torre", "SET TOWER")
-AddDropdown(itemCard, {"Roll", "Upgrade"}, State.Tower, "ItemAction")
-AddDropdown(itemCard, Database.Items, State.Tower, "ItemTarget")
-AddDropdown(itemCard, Database.Materials, State.Tower, "MaterialTarget")
-AddHybridButton(itemCard, "EXECUTAR", State.Tower, "ItemAction", "ItemLoopActive", "I_Roll.lua", "I_Upgrade.lua")
+AddDropdown(itemCard, {"Roll", "Upgrade"}, State.Tower, "ItemAction", 1, 27)
+AddDropdown(itemCard, Database.Items, State.Tower, "ItemTarget", 2, 27)
+AddDropdown(itemCard, Database.Materials, State.Tower, "MaterialTarget", 3, 27)
+AddHybridButton(itemCard, "EXECUTAR", State.Tower, "ItemAction", "ItemLoopActive", "I_Roll.lua", "I_Upgrade.lua", 4, 29)
 
 -- ==========================================
 -- ⚔️ ABA: INVASÃO
@@ -474,9 +449,9 @@ AddHybridButton(itemCard, "EXECUTAR", State.Tower, "ItemAction", "ItemLoopActive
 
 -- 2. CARD RAID
 local raidCard = CreateCard("Invasão", "RAID")
-AddTextBox(raidCard, "Personagem 1", State.Raid, "Char1", 1)
-AddTextBox(raidCard, "Personagem 2", State.Raid, "Char2", 2)
-AddTextBox(raidCard, "Personagem 3", State.Raid, "Char3", 3)
+AddTextBox(raidCard, "Personagem 1", State.Raid, "Char1", 1, 27)
+AddTextBox(raidCard, "Personagem 2", State.Raid, "Char2", 2, 27)
+AddTextBox(raidCard, "Personagem 3", State.Raid, "Char3", 3, 27)
 -- 2. Botões (Ordem 4 - Sempre ficará embaixo)
 AddDoubleButtons(raidCard, 
     "JOIN", "Raid.lua", 
@@ -486,21 +461,21 @@ AddDoubleButtons(raidCard,
             root.CFrame = CFrame.new(-533.24, -114.05, -208.06) 
         end
     end, 
-    4
+    4, 29
 )
 
 -- 2. CARD VOTAÇÂO
 local voteCard = CreateCard("Invasão", "VOTAÇÃO")
-AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selected", 1)
-AddTimedButton(voteCard, "VOTAR", "Vote_Manual.lua", 2)
-AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3)
+AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selected", 1, 52)
+AddTimedButton(voteCard, "VOTAR", "Vote_Manual.lua", 2, 29)
+AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3, 29)
 
 -- 3. CARD LEVEL UP
 local levelCard = CreateCard("Invasão", "LEVEL UP")
-AddTextBox(levelCard, "Nome do Personagem", State.Exp, "Name", 1)
-AddTextBox(levelCard, "Quantidade", State.Exp, "Amount", 2)
-AddDropdown(levelCard, Database.ExpTypes, State.Exp, "Type", 3)
-AddTimedButton(levelCard, "UPAR", "Exp.lua", 4)
+AddTextBox(levelCard, "Nome do Personagem", State.Exp, "Name", 1, 27)
+AddTextBox(levelCard, "Quantidade", State.Exp, "Amount", 2, 27)
+AddDropdown(levelCard, Database.ExpTypes, State.Exp, "Type", 3, 27)
+AddTimedButton(levelCard, "UPAR", "Exp.lua", 4, 29)
 
 -- ==========================================
 -- 📑 TABS
