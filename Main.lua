@@ -321,14 +321,15 @@ AddToggle(afkCard, "ANTI AFK", State, "AntiAFKActive", "Anti_Afk.lua")
 -- ==========================================
 -- 🏰 ABA: TORRE
 -- ==========================================
+
 -- 1. CARD TOWER
 local towerCard = CreateCard("Torre", "TOWER")
 AddTimedButton(towerCard, "Iniciar Torre", "Tower.lua")
 
 -- 2. CARD TOWER ROLL
-Local t_rollCard = CreateCard("Torre", "TOWER ROLL"
-AddTextBox(t_rollCard, "Nome do Personagem", State.tower, "Target") 
-AddToggle(t_rollCard, "INICIAR ROLL", State.tower, "Active", "T_Roll.lua"
+local t_rollCard = CreateCard("Torre", "TOWER ROLL")
+AddTextBox(t_rollCard, "Nome do Personagem", State.Tower, "Target")
+AddToggle(t_rollCard, "INICIAR ROLL", State.Tower, "Active", "T_Roll.lua")
 
 
 -- ==========================================
