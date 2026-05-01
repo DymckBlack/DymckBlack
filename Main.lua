@@ -350,7 +350,10 @@ local function addTab(name, default)
     btn.Text = name
     btn.BackgroundColor3 = default and COR_AZUL or Color3.fromRGB(45,45,50)
     btn.TextColor3 = Color3.new(1,1,1)
-    Instance.new("UICorner", btn)
+    btn.Font = Enum.Font.GothamBold -- Adicionei a fonte para ficar bonito
+    btn.TextSize = 11
+
+    local corner = Instance.new("UICorner", btn) -- Faltava criar a variável!
     corner.CornerRadius = UDim.new(0, 8)
     
     if default then pages[name].Visible = true end
