@@ -346,12 +346,13 @@ tabLayout.Padding = UDim.new(0,6)
 
 local function addTab(name, default)
     local btn = Instance.new("TextButton", tabContainer)
-    btn.Size = UDim2.new(0,80,0,30)
+    btn.Size = UDim2.new(0,75,0,35)
     btn.Text = name
     btn.BackgroundColor3 = default and COR_AZUL or Color3.fromRGB(45,45,50)
     btn.TextColor3 = Color3.new(1,1,1)
     Instance.new("UICorner", btn)
-
+    corner.CornerRadius = UDim.new(0, 8)
+    
     if default then pages[name].Visible = true end
 
     btn.MouseButton1Click:Connect(function()
