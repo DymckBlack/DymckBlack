@@ -1,45 +1,55 @@
--- [[ DYMCK HUB - TOWER ROLL (REPAIRED) ]]
+-- [[ DYMCK HUB - TOWER ROLL (ANTI-NIL VERSION) ]]
 
--- 1. TRAVA DE SEGURANÇA (IMPEDE MULTIPLICAÇÃO)
-if _G.TRollRunning then 
-    print("🎰 ROLL: O loop já está ativo em segundo plano.")
-    return 
+-- 1. VERIFICAÇÃO INICIAL DE SEGURANÇA
+if _G.TRollRunning then return end
+
+-- Espera o Hub carregar completamente se necessário
+if not _G.HubState then
+    task.wait(1)
 end
-_G.TRollRunning = true
 
+-- Se mesmo assim não existir, cancela para não dar erro de 'nil'
+if not _G.HubState or not _G.HubState.Tower then
+    warn("❌ T_Roll: HubState.Tower não encontrado!")
+    return
+end
+
+_G.TRollRunning = true
 local rs = game:GetService("ReplicatedStorage")
 local towerRemote = rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("Tower")
-local State = _G.HubState
 
-print("✅ T_Roll: Script carregado e aguardando ativação.")
+print("✅ T_Roll: Loop iniciado com sucesso.")
 
 -- 2. LOOP DE EXECUÇÃO
 task.spawn(function()
     while true do
-        -- Se o Hub for deletado ou o State sumir, encerra o loop definitivamente
-        if not _G.HubState then
+        -- Verifica se o Hub ainda existe
+        if not _G.HubState or not _G.HubState.Tower then
             _G.TRollRunning = false
-            print("🛑 ROLL: HubState não encontrado. Encerrando script.")
             break
         end
 
-        -- Verifica se o botão está ON
-if State.Tower.Active then
-    local cartaAlvo = State.Tower.Target
-    
-    -- Só dispara o Remote se o campo NÃO estiver vazio
-    if cartaAlvo and cartaAlvo ~= "" then
-        if towerRemote then
-            pcall(function()
-                towerRemote:FireServer("Roll", cartaAlvo)
-            end)
+        local State = _G.HubState.Tower
+
+        -- Só executa se o Toggle estiver ON
+        if State.Active then
+            local cartaAlvo = State.Target
+            
+            -- Só dispara se houver nome no TextBox
+            if cartaAlvo and cartaAlvo ~= "" then
+                if towerRemote then
+                    pcall(function()
+                        towerRemote:FireServer("Roll", cartaAlvo)
+                    end)
+                end
+                task.wait(0.6) -- Delay do Roll
+            else
+                -- Se campo vazio, espera mais para não floodar console
+                task.wait(2)
+            end
+        else
+            -- Standby quando o botão está OFF
+            task.wait(1)
         end
-        task.wait(0.6)
-    else
-        -- Se estiver vazio, o script avisa no console e não faz nada
-        print("⚠️ ROLL: Campo vazio! Digite o nome do personagem para continuar.")
-        task.wait(2) -- Espera um pouco para não floodar o console
     end
-else
-    task.wait(1)
-end
+end)
