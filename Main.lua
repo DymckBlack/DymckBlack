@@ -422,13 +422,11 @@ AddHybridButton(itemCard, "EXECUTAR", State.Tower, "ItemAction", "ItemLoopActive
 -- ⚔️ ABA: INVASÃO
 -- ==========================================
 
+-- 2. CARD RAID
 local raidCard = CreateCard("Invasão", "RAID")
-
--- 1. Inputs (Ordem 1, 2, 3)
 AddTextBox(raidCard, "Personagem 1", State.Raid, "Char1", 1)
 AddTextBox(raidCard, "Personagem 2", State.Raid, "Char2", 2)
 AddTextBox(raidCard, "Personagem 3", State.Raid, "Char3", 3)
-
 -- 2. Botões (Ordem 4 - Sempre ficará embaixo)
 AddDoubleButtons(raidCard, 
     "JOIN", "Raid.lua", 
@@ -440,6 +438,12 @@ AddDoubleButtons(raidCard,
     end, 
     4
 )
+
+-- 2. CARD VOTAÇÂO
+local voteCard = CreateCard("Invasão", "VOTAÇÃO")
+AddTextBox(voteCard, "Buscar Deck...", State.Vote, "Selected", 1)
+AddTimedButton(voteCard, "VOTAR AGORA", "Vote_Manual.lua", 2)
+AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3)
 
 -- ==========================================
 -- 📑 TABS
