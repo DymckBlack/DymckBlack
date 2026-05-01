@@ -15,6 +15,7 @@ _G.HubState = _G.HubState or {
     CashActive = false, -- ADICIONE ESTA LINHA
     AutoCollectActive = false, -- ADICIONE ESTA LINHA TAMBÉM
     Roll = { Target = "", Active = false },
+    AntiAFKActive = false,
     Tower = { Target = "", Active = false },
     Raid = { Decks = {}, Auto = false },
     Vote = { Selected = "Ninja", Auto = false },
@@ -312,6 +313,10 @@ local rollCard = CreateCard("Global", "ROLL UR")
 AddTextBox(rollCard, "Nome do Personagem", State.Roll, "Target") 
 -- Sincronizado com State.Roll.Active
 AddToggle(rollCard, "INICIAR ROLL", State.Roll, "Active", "Grade.lua")
+
+-- 4. CARD ANTI AFK
+local afkCard = CreateCard("Global", "Anti-AFK")
+AddToggle(afkCard, "ANTI AFK", State, "AntiAFKActive", "Anti_Afk.lua")
 
 -- ==========================================
 -- 🏰 ABA: TORRE (ESTRUTURA INICIAL)
