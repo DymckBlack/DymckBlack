@@ -375,6 +375,56 @@ local function AddDoubleButtons(parent, text1, script1, text2, callback2, order)
 end
 
 -- ==========================================
+-- 7. Caixa de Busca Inteligente (Novo!)
+-- ==========================================
+local function AddSearchBox(parent, placeholder, list, stateTable, key, order)
+    local container = Instance.new("Frame", parent)
+    container.LayoutOrder = order or 0
+    container.Size = UDim2.new(1, 0, 0, 52)
+    container.BackgroundTransparency = 1
+
+    local layout = Instance.new("UIListLayout", container)
+    layout.Padding = UDim.new(0, 2)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+    local box = Instance.new("TextBox", container)
+    box.Size = UDim2.new(1, 0, 0, 27)
+    box.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+    box.PlaceholderText = placeholder
+    box.Text = ""
+    box.TextColor3 = Color3.new(0, 0, 0)
+    box.Font = Enum.Font.GothamBold
+    box.TextSize = 10
+    Instance.new("UICorner", box)
+
+    local label = Instance.new("TextLabel", container)
+    label.Size = UDim2.new(1, 0, 0, 20)
+    label.BackgroundTransparency = 1
+    label.RichText = true
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 10
+    label.TextColor3 = Color3.new(1, 1, 1)
+    
+    local function updateVisual(val)
+        stateTable[key] = val
+        label.Text = 'Selecionado: <font color="rgb(0, 120, 255)">' .. val .. '</font>'
+    end
+
+    updateVisual(stateTable[key] or list[1])
+
+    box:GetPropertyChangedSignal("Text"):Connect(function()
+        local query = box.Text:lower()
+        if query == "" then return end
+        for _, item in pairs(list) do
+            if item:lower():find(query) == 1 then
+                updateVisual(item)
+                break
+            end
+        end
+    end)
+end
+
+-- ==========================================
 -- 🌍 ABA: GLOBAL
 -- ==========================================
 
@@ -441,8 +491,8 @@ AddDoubleButtons(raidCard,
 
 -- 2. CARD VOTAÇÂO
 local voteCard = CreateCard("Invasão", "VOTAÇÃO")
-AddTextBox(voteCard, "Buscar Deck...", State.Vote, "Selected", 1)
-AddTimedButton(voteCard, "VOTAR AGORA", "Vote_Manual.lua", 2)
+AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selected", 1)
+AddTimedButton(voteCard, "VOTAR", "Vote_Manual.lua", 2)
 AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3)
 
 -- ==========================================
