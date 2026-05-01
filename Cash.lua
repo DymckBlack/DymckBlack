@@ -1,15 +1,14 @@
--- [[ DYMCK HUB - CASH SCRIPT (DIAGNÓSTICO) ]]
--- Este script imprimirá informações no console (F9) para descobrirmos o erro.
+-- [[ DYMCK HUB - CASH SCRIPT (VERSÃO ESTÁVEL) ]]
 
-if _G.CashLoaded then 
-    print("⚠️ CASH: O script já estava carregado. Verifique se as alterações no GitHub foram salvas.")
-end 
-_G.CashLoaded = true
+-- 1. TRAVA DE CARREGAMENTO (IMPEDE MULTIPLICAÇÃO)
+if _G.CashLoopRunning then 
+    print("⚠️ CASH: O script já está rodando em segundo plano. Ignorando carga duplicada.")
+    return 
+end
+_G.CashLoopRunning = true
 
 local Players = game:GetService("Players")
 local lp = Players.LocalPlayer
-
--- Pega a referência do Estado Central
 local State = _G.HubState
 
 -- Memória de Sessão
@@ -27,10 +26,7 @@ local PlotPositions = {
 
 local function GetMyPlotByPos()
     local root = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart")
-    if not root then 
-        print("❌ CASH: RootPart não encontrado. O personagem está vivo?")
-        return nil 
-    end
+    if not root then return nil end
     
     local closestNum = nil
     local shortestDist = math.huge
@@ -41,81 +37,69 @@ local function GetMyPlotByPos()
             closestNum = num
         end
     end
-    
-    -- Se a distância for muito grande (ex: > 50 studs), talvez as coordenadas mudaram
-    if shortestDist > 50 then
-        print("⚠️ CASH: Plot mais próximo está muito longe (" .. math.floor(shortestDist) .. " studs).")
-    end
-    
-    return closestNum
+    return (shortestDist < 50) and closestNum or nil
 end
 
-task.spawn(function()
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local CardRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Card")
-    local Plots = workspace:WaitForChild("Plots")
-    
-    print("✅ DymckHUB: Loop de CASH iniciado.")
+-- Inicia o processo único
+print("✅ DymckHUB: Loop de CASH iniciado com proteção de duplicata.")
 
-    while true do
-        -- Verifica se o State existe e se o CashActive está ON
-        if State and State.CashActive then
-            
-            if not SavedPlotNumber then 
-                print("🔍 CASH: Tentando identificar seu Plot...")
-                SavedPlotNumber = GetMyPlotByPos() 
-                if SavedPlotNumber then
-                    print("🎯 CASH: Plot identificado com sucesso: " .. SavedPlotNumber)
-                else
-                    print("❌ CASH: Não foi possível identificar seu Plot pela posição.")
-                end
-            end
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CardRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Card")
+local Plots = workspace:WaitForChild("Plots")
 
+-- O LOOP PRINCIPAL
+while true do
+    -- Se o Hub for fechado ou o estado for perdido, limpamos a trava e paramos tudo
+    if not _G.HubState then
+        _G.CashLoopRunning = false
+        print("🛑 CASH: HubState não encontrado. Parando script.")
+        break
+    end
+
+    if State.CashActive then
+        -- Identifica o Plot apenas uma vez por ativação
+        if not SavedPlotNumber then 
+            SavedPlotNumber = GetMyPlotByPos() 
             if SavedPlotNumber then
-                local sucesso, erro = pcall(function()
-                    local plot = Plots:FindFirstChild(tostring(SavedPlotNumber))
-                    if plot then
-                        local display = plot.Map:FindFirstChild("Display")
-                        if display then
-                            local sides = {display:FindFirstChild("Left"), display:FindFirstChild("Right")}
-                            for _, side in pairs(sides) do
-                                if side then
-                                    for slotIdx = 1, 9 do
-                                        local card = side:FindFirstChild(tostring(slotIdx))
-                                        if card then 
-                                            CardRemote:FireServer("Collect", card) 
-                                        end
+                print("🎯 CASH: Plot identificado: " .. SavedPlotNumber)
+            end
+        end
+
+        if SavedPlotNumber then
+            pcall(function()
+                local plot = Plots:FindFirstChild(tostring(SavedPlotNumber))
+                if plot then
+                    local display = plot.Map:FindFirstChild("Display")
+                    if display then
+                        local sides = {display:FindFirstChild("Left"), display:FindFirstChild("Right")}
+                        for _, side in pairs(sides) do
+                            if side then
+                                for slotIdx = 1, 9 do
+                                    local card = side:FindFirstChild(tostring(slotIdx))
+                                    if card then 
+                                        CardRemote:FireServer("Collect", card) 
                                     end
                                 end
                             end
                         end
-                    else
-                        print("❌ CASH: Objeto do Plot " .. SavedPlotNumber .. " não encontrado no Workspace.")
                     end
-                end)
-                
-                if not sucesso then
-                    print("🔥 CASH: Erro interno na coleta: " .. tostring(erro))
                 end
+            end)
+            
+            task.wait(1.5) -- Tempo entre coletas
 
-                task.wait(1.8) 
+            pcall(function()
+                CardRemote:FireServer("Page", "RightArrow")
+            end)
 
-                pcall(function()
-                    CardRemote:FireServer("Page", "RightArrow")
-                end)
-
-                task.wait(1.8) 
-            else
-                task.wait(5) -- Espera mais tempo se não achar o plot
-            end
+            task.wait(1.5) -- Tempo após mudar página
         else
-            -- Se o State não existir ou CashActive for false
-            if not State then
-                print("⚠️ CASH: HubState é nulo (nil). O Main carregou?")
-                State = _G.HubState
-            end
-            SavedPlotNumber = nil
-            task.wait(2) 
+            -- Se não achou plot, espera e tenta identificar de novo no próximo ciclo
+            task.wait(5)
         end
+    else
+        -- Se o botão estiver OFF, o script fica em "standby" sem gastar CPU
+        SavedPlotNumber = nil
+        task.wait(1) 
     end
-end)
+end
