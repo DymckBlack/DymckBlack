@@ -477,6 +477,11 @@ AddTextBox(levelCard, "Quantidade", State.Exp, "Amount", 2, 27)
 AddDropdown(levelCard, Database.ExpTypes, State.Exp, "Type", 3, 27)
 AddTimedButton(levelCard, "UPAR", "Exp.lua", 4, 29)
 
+-- 4. CARD MANGA
+local mangaCard = CreateCard("Invasão", "MANGA")
+AddTextBox(mangaCard, "Nome do Personagem", State.Manga, "Name", 1, 27)
+AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 29)
+
 -- ==========================================
 -- 📑 TABS
 -- ==========================================
