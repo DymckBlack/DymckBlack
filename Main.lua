@@ -97,12 +97,13 @@ local controls = Instance.new("Frame", header)
 controls.Size = UDim2.new(0,80,1,0)
 controls.Position = UDim2.new(1,-85,0,0)
 controls.BackgroundTransparency = 1
+controls.ZIndex = 5
 
 local ctrlLayout = Instance.new("UIListLayout", controls)
 ctrlLayout.FillDirection = Enum.FillDirection.Horizontal
 ctrlLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 ctrlLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-ctrlLayout.Padding = UDim.new(0,5)
+ctrlLayout.Padding = UDim.new(0,8)
 
 local function CreateControlBtn(text, color, callback)
     local btn = Instance.new("TextButton", controls)
@@ -134,13 +135,13 @@ local function createPage(name)
     sc.Size = UDim2.new(1,-10,1,-10)
     sc.Position = UDim2.new(0,5,0,5)
     sc.BackgroundTransparency = 1
-    sc.ScrollBarThickness = 3
+    sc.ScrollBarThickness = 0 -- REMOVIDO: Agora a barra sumiu!
     sc.AutomaticCanvasSize = Enum.AutomaticSize.Y
     sc.Visible = false
 
     local grid = Instance.new("UIGridLayout", sc)
-    grid.CellSize = UDim2.new(0,120,0,160)
-    grid.CellPadding = UDim2.new(0,10,0,10)
+    grid.CellSize = UDim2.new(0,120,0,165) -- Aumentei um pouco a altura da célula
+    grid.CellPadding = UDim2.new(0,12,0,12) -- Mais espaço entre os cards
     grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
     pages[name] = sc
 end
@@ -206,7 +207,7 @@ end
 -- 1. Botão Liga/Desliga (Sincronizado com State)
 local function AddToggle(parent, text, stateTable, key, scriptName)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Size = UDim2.new(1, 0, 0, 35)
     btn.Text = text
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.GothamBold
@@ -229,7 +230,7 @@ end
 -- 2. Botão de Clique Único (Ex: Join, Teleport, Votar)
 local function AddTimedButton(parent, text, scriptName)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Size = UDim2.new(1, 0, 0, 35)
     btn.BackgroundColor3 = COR_VERMELHO
     btn.Text = text
     btn.TextColor3 = Color3.new(1, 1, 1)
@@ -248,7 +249,7 @@ end
 -- 3. Caixa de Texto (Sincronizada com State)
 local function AddTextBox(parent, placeholder, stateTable, key)
     local box = Instance.new("TextBox", parent)
-    box.Size = UDim2.new(1, 0, 0, 30)
+    box.Size = UDim2.new(1, 0, 0, 35)
     box.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
     box.PlaceholderText = placeholder
     box.Text = stateTable[key] or ""
@@ -265,7 +266,7 @@ end
 -- 4. Menu de Escolha (Usa a Database e salva no State)
 local function AddDropdown(parent, list, stateTable, key)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.Size = UDim2.new(1, 0, 0, 35)
     btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
     
     -- Se o State estiver vazio, usa o primeiro item da lista da Database
