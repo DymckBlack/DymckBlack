@@ -12,6 +12,8 @@ local BASE_URL = "https://raw.githubusercontent.com/DymckBlack/DymckBlack/main/"
 -- ==========================================
 
 _G.HubState = _G.HubState or {
+    CashActive = false, -- ADICIONE ESTA LINHA
+    AutoCollectActive = false, -- ADICIONE ESTA LINHA TAMBÉM
     Roll = { Target = "", Active = false },
     Tower = { Target = "", Active = false },
     Raid = { Decks = {}, Auto = false },
