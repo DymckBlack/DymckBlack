@@ -1,20 +1,16 @@
--- [[ DYMCK HUB - COLLECT SCRIPT (BACKEND) ]]
--- Este script lida com a coleta manual e o loop AFK de 20 min
-
+-- [[ DYMCK HUB - COLLECT SCRIPT (NOVO FORMATO) ]]
 if _G.CollectLoaded then 
-    -- Se já estiver carregado e for um clique manual, executa uma vez e sai
-    if not _G.AutoCollectActive then
+    -- Se já carregou e foi chamado pelo TimedButton, executa uma vez e encerra
+    if not _G.HubState.AutoCollectActive then
         task.spawn(function()
             local rs = game:GetService("ReplicatedStorage")
             local CardRemote = rs:WaitForChild("Remotes"):WaitForChild("Card")
             local PotionRemote = rs:WaitForChild("Remotes"):WaitForChild("Potion")
-            
             for i = 1, 30 do
-                CardRemote:FireServer("CollectToken", tostring(i))
+                CardRemote:FireServer("CollectToken", string.format("%d", i))
                 task.wait(0.03)
             end
             PotionRemote:FireServer("Collect", "TravelToken1")
-            task.wait(0.1)
             PotionRemote:FireServer("Collect", "TravelToken2")
         end)
     end
@@ -22,41 +18,40 @@ if _G.CollectLoaded then
 end
 
 _G.CollectLoaded = true
+local State = _G.HubState
 
--- Função Principal de Coleta
 local function executarColeta()
     local rs = game:GetService("ReplicatedStorage")
     local CardRemote = rs:WaitForChild("Remotes"):WaitForChild("Card")
     local PotionRemote = rs:WaitForChild("Remotes"):WaitForChild("Potion")
 
-    -- Coleta Tokens de Card
-    for i = 1, 30 do
-        CardRemote:FireServer("CollectToken", tostring(i))
-        task.wait(0.03)
-    end
-
-    -- Coleta Travel Tokens
-    PotionRemote:FireServer("Collect", "TravelToken1")
-    task.wait(0.1)
-    PotionRemote:FireServer("Collect", "TravelToken2")
+    pcall(function()
+        for i = 1, 30 do
+            CardRemote:FireServer("CollectToken", tostring(i))
+            task.wait(0.03)
+        end
+        PotionRemote:FireServer("Collect", "TravelToken1")
+        task.wait(0.1)
+        PotionRemote:FireServer("Collect", "TravelToken2")
+    end)
 end
 
--- LOOP AFK (20 Minutos)
+-- Loop AFK
 task.spawn(function()
     while true do
-        task.wait(1)
-        
-        if _G.AutoCollectActive then
+        if State and State.AutoCollectActive then
+            print("📦 COLLECT: Iniciando coleta automática...")
             executarColeta()
             
-            -- Espera 20 minutos (1200 segundos) ou até o usuário desligar o botão
+            -- Espera 20 minutos ou até desligarem
             for i = 1, 1200 do
-                if not _G.AutoCollectActive then break end
+                if not State.AutoCollectActive then break end
                 task.wait(1)
             end
         end
+        task.wait(2)
     end
 end)
 
--- Execução inicial (Caso tenha sido chamado pelo botão de "Coletar" manual)
+-- Execução imediata ao carregar
 executarColeta()
