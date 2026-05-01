@@ -24,12 +24,6 @@ _G.HubState = _G.HubState or {
     RaidAFK = { Active = false, Decks = {} },
     Trial = {}
 }
--- Inicialização Automática dos Decks no State
-for _, name in pairs(Database.Decks) do
-    if not _G.HubState.RaidAFK.Decks[name] then
-        _G.HubState.RaidAFK.Decks[name] = {char1 = "", char2 = "", char3 = ""}
-    end
-end
 local State = _G.HubState
 
 -- ==========================================
@@ -75,6 +69,15 @@ local Database = {
     }
 }
 
+for _, name in pairs(Database.Decks) do
+    if not _G.HubState.RaidAFK.Decks[name] then
+        _G.HubState.RaidAFK.Decks[name] = {
+            char1 = "",
+            char2 = "",
+            char3 = ""
+        }
+    end
+end
 -- ==========================================
 -- 🧱 MAIN
 -- ==========================================
