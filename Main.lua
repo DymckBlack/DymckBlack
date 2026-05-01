@@ -78,7 +78,7 @@ main.BackgroundColor3 = Color3.fromRGB(20,20,22)
 main.Active = true
 main.Draggable = true
 main.ClipsDescendants = true
-Instance.new("UICorner", main)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
 
 -- ==========================================
 -- 🎛 HEADER
@@ -87,7 +87,7 @@ Instance.new("UICorner", main)
 local header = Instance.new("Frame", main)
 header.Size = UDim2.new(1,0,0,65)
 header.BackgroundColor3 = Color3.fromRGB(30,30,35)
-Instance.new("UICorner", header)
+Instance.new("UICorner", header).CornerRadius = UDim.new(0, 12)
 
 -- ==========================================
 -- CONTROLES
@@ -111,6 +111,7 @@ local function CreateControlBtn(text, color, callback)
     btn.Text = text
     btn.BackgroundColor3 = color
     btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.GothamBold
     Instance.new("UICorner", btn)
     btn.MouseButton1Click:Connect(callback)
 end
@@ -140,7 +141,7 @@ local function createPage(name)
     sc.Visible = false
 
     local grid = Instance.new("UIGridLayout", sc)
-    grid.CellSize = UDim2.new(0,120,0,165) -- Aumentei um pouco a altura da célula
+    grid.CellSize = UDim2.new(0,120,0,160) -- Aumentei um pouco a altura da célula
     grid.CellPadding = UDim2.new(0,12,0,12) -- Mais espaço entre os cards
     grid.HorizontalAlignment = Enum.HorizontalAlignment.Center
     pages[name] = sc
