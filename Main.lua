@@ -5,7 +5,7 @@ local pGui = player:WaitForChild("PlayerGui")
 -- ==========================================
 -- 🌐 CONFIG
 -- ==========================================
-local BASE_URL = "https://raw.githubusercontent.com/DymckOficial/DymckHUB/main/"
+local BASE_URL = "https://raw.githubusercontent.com/DymckBlack/DymckBlack/main/"
 
 -- ==========================================
 -- 🧠 ESTADO CENTRAL
