@@ -336,7 +336,7 @@ AddToggle(raidCard, "AUTO RAID", State.Raid, "Auto", "Raid_Afk.lua")
 
 local tabContainer = Instance.new("Frame", header)
 tabContainer.Size = UDim2.new(1,-95,1,0)
-tabContainer.Position = UDim2.new(0,15,0,0)
+tabContainer.Position = UDim2.new(0,17,0,0)
 tabContainer.BackgroundTransparency = 1
 
 local tabLayout = Instance.new("UIListLayout", tabContainer)
