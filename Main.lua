@@ -495,6 +495,13 @@ AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selecte
 AddTimedButton(voteCard, "VOTAR", "Vote_Manual.lua", 2)
 AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3)
 
+-- 3. CARD LEVEL UP
+local levelCard = CreateCard("Invasão", "LEVEL UP")
+AddTextBox(levelCard, "Nome do Personagem", State.Exp, "Name", 1)
+AddTextBox(levelCard, "Quantidade", State.Exp, "Amount", 2)
+AddDropdown(levelCard, Database.ExpTypes, State.Exp, "Type", 3)
+AddTimedButton(levelCard, "UPAR", "Exp.lua", 4)
+
 -- ==========================================
 -- 📑 TABS
 -- ==========================================
