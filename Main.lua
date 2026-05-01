@@ -275,7 +275,7 @@ local function AddTextBox(parent, placeholder, stateTable, key)
 end
 
 -- ==========================================
--- 4. Menu de Escolha (Ex: Item upgrade e roll)
+-- 4. Menu de Escolha
 -- ==========================================
 
 local function AddDropdown(parent, list, stateTable, key)
@@ -301,6 +301,44 @@ local function AddDropdown(parent, list, stateTable, key)
         stateTable[key] = list[nextPos]
         btn.Text = list[nextPos]
     end)
+end
+
+-- ==========================================
+-- 5. Botão Híbrido (Troca entre Toggle e Execução Única)
+-- ==========================================
+
+local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, scriptRoll, scriptUpgrade)
+    local btn = Instance.new("TextButton", parent)
+    btn.Size = UDim2.new(1, 0, 0, 27)
+    btn.BackgroundColor3 = COR_VERMELHO
+    btn.Text = text
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 10
+    Instance.new("UICorner", btn)
+
+    btn.MouseButton1Click:Connect(function()
+        -- Se a ação no State for "Roll", ele age como Toggle
+        if stateTable[actionKey] == "Roll" then
+            stateTable[activeKey] = not stateTable[activeKey]
+            btn.BackgroundColor3 = stateTable[activeKey] and COR_VERDE or COR_VERMELHO
+            btn.Text = stateTable[activeKey] and "ROLL: ON" or "ROLL: OFF"
+            
+            if stateTable[activeKey] then
+                LoadScript(scriptRoll)
+            end
+        else
+            -- Se for qualquer outra coisa (Upgrade), age como clique único
+            btn.BackgroundColor3 = COR_VERDE
+            btn.Text = "EXECUTANDO..."
+            LoadScript(scriptUpgrade)
+            
+            task.wait(1.5)
+            btn.BackgroundColor3 = COR_VERMELHO
+            btn.Text = text
+        end
+    end)
+    return btn
 end
 
 -- ==========================================
@@ -342,50 +380,10 @@ AddToggle(t_rollCard, "INICIAR ROLL", State.Tower, "Active", "T_Roll.lua")
 
 -- 3. CARD SET TOWER
 local itemCard = CreateCard("Torre", "SET TOWER")
-
--- Dropdown manual para Ação (Não precisa de Database)
 AddDropdown(itemCard, {"Roll", "Upgrade"}, State.Tower, "ItemAction")
-
--- Dropdowns que puxam automaticamente da sua Database
 AddDropdown(itemCard, Database.Items, State.Tower, "ItemTarget")
 AddDropdown(itemCard, Database.Materials, State.Tower, "MaterialTarget")
-
--- Botão Inteligente (Híbrido)
-local actionBtn = Instance.new("TextButton", itemCard)
-actionBtn.Size = UDim2.new(1, 0, 0, 27)
-actionBtn.BackgroundColor3 = COR_VERMELHO
-actionBtn.Text = "EXECUTAR"
-actionBtn.TextColor3 = Color3.new(1, 1, 1)
-actionBtn.Font = Enum.Font.GothamBold
-actionBtn.TextSize = 10
-Instance.new("UICorner", actionBtn)
-
-actionBtn.MouseButton1Click:Connect(function()
-    -- Lógica baseada na escolha da primeira Dropdown
-    if State.Tower.ItemAction == "Roll" then
-        -- Comportamento: TOGGLE
-        State.Tower.ItemLoopActive = not State.Tower.ItemLoopActive
-        
-        if State.Tower.ItemLoopActive then
-            actionBtn.BackgroundColor3 = COR_VERDE
-            actionBtn.Text = "ROLL: ON"
-            LoadScript("I_Roll.lua")
-        else
-            actionBtn.BackgroundColor3 = COR_VERMELHO
-            actionBtn.Text = "ROLL: OFF"
-        end
-    else
-        -- Comportamento: BOTÃO SIMPLES
-        actionBtn.BackgroundColor3 = COR_VERDE
-        actionBtn.Text = "UPGRADING..."
-        
-        LoadScript("I_Upgrade.lua")
-        
-        task.wait(1.5) -- Feedback visual
-        actionBtn.BackgroundColor3 = COR_VERMELHO
-        actionBtn.Text = "EXECUTAR"
-    end
-end)
+AddHybridButton(itemCard, "EXECUTAR", State.Tower, "ItemAction", "ItemLoopActive", "I_Roll.lua", "I_Upgrade.lua")
 
 -- ==========================================
 -- ⚔️ ABA: INVASÃO
