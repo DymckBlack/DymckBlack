@@ -256,7 +256,8 @@ local function AddTextBox(parent, placeholder, stateTable, key)
     box.Text = stateTable[key] or ""
     box.TextColor3 = Color3.new(0, 0, 0)
     box.Font = Enum.Font.GothamBold
-    box.TextSize = 11
+    box.TextSize = 10
+    box.ClipsDescendants = true
     Instance.new("UICorner", box)
 
     box.FocusLost:Connect(function()
@@ -279,6 +280,7 @@ local function AddDropdown(parent, list, stateTable, key)
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 10
+    box.ClipsDescendants = true
     Instance.new("UICorner", btn)
 
     btn.MouseButton1Click:Connect(function()
