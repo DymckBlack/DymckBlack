@@ -17,7 +17,7 @@ _G.HubState = _G.HubState or {
     Roll = { Target = "", Active = false },
     AntiAFKActive = false,
     Tower = { Target = "", Active = false },
-    Raid = { Decks = {}, Auto = false },
+    Raid = { Char1 = "", Char2 = "", Char3 = "", Active = false },
     Vote = { Selected = "Ninja", Auto = false },
     Exp = { Name = "", Type = "Common", Amount = "1" },
     Manga = { Name = "" },
@@ -295,7 +295,7 @@ local function AddDropdown(parent, list, stateTable, key)
 end
 
 -- ==========================================
--- 🌍 ABA: GLOBAL (CONFIGURADA)
+-- 🌍 ABA: GLOBAL
 -- ==========================================
 
 -- 1. CARD CASH
@@ -319,7 +319,7 @@ local afkCard = CreateCard("Global", "Anti-AFK")
 AddToggle(afkCard, "ANTI AFK", State, "AntiAFKActive", "Anti_Afk.lua")
 
 -- ==========================================
--- 🏰 ABA: TORRE (ESTRUTURA INICIAL)
+-- 🏰 ABA: TORRE
 -- ==========================================
 local towerCard = CreateCard("Torre", "TOWER")
 AddTimedButton(towerCard, "Iniciar Torre", "Tower.lua")
@@ -328,7 +328,7 @@ AddTimedButton(towerCard, "Iniciar Torre", "Tower.lua")
 
 
 -- ==========================================
--- ⚔️ INVASÃO
+-- ⚔️ ABA: INVASÃO
 -- ==========================================
 
 local raidCard = CreateCard("Invasão", "AUTO RAID")
