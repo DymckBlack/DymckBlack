@@ -280,7 +280,7 @@ end
 
 local function AddDropdown(parent, list, stateTable, key)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(1, 0, 0, 25)
+    btn.Size = UDim2.new(1, 0, 0, 27)
     btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
     
     if stateTable[key] == "" or stateTable[key] == nil then
@@ -352,7 +352,7 @@ AddDropdown(itemCard, Database.Materials, State.Tower, "MaterialTarget")
 
 -- Botão Inteligente (Híbrido)
 local actionBtn = Instance.new("TextButton", itemCard)
-actionBtn.Size = UDim2.new(1, 0, 0, 25)
+actionBtn.Size = UDim2.new(1, 0, 0, 27)
 actionBtn.BackgroundColor3 = COR_VERMELHO
 actionBtn.Text = "EXECUTAR"
 actionBtn.TextColor3 = Color3.new(1, 1, 1)
