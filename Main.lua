@@ -157,10 +157,6 @@ createPage("Trial")
 -- 🧩 CARD PADRÃO (CORRIGIDO)
 -- ==========================================
 
--- ==========================================
--- 🧩 CARD PADRÃO (VERSÃO COM ORDEM MANUAL)
--- ==========================================
-
 local function CreateCard(page, title)
     local card = Instance.new("Frame", pages[page])
     card.Size = UDim2.new(0,120,0,160)
@@ -169,7 +165,6 @@ local function CreateCard(page, title)
     card.BorderColor3 = Color3.fromRGB(40,40,45)
     Instance.new("UICorner", card)
 
-    -- Título do Card
     local label = Instance.new("TextLabel", card)
     label.Size = UDim2.new(1,0,0,30)
     label.BackgroundTransparency = 1
@@ -178,7 +173,6 @@ local function CreateCard(page, title)
     label.Font = Enum.Font.GothamBold
     label.TextSize = 14
 
-    -- Container interno para os componentes
     local container = Instance.new("Frame", card)
     container.Size = UDim2.new(1,-10,1,-35)
     container.Position = UDim2.new(0,5,0,30)
@@ -187,21 +181,10 @@ local function CreateCard(page, title)
     local layout = Instance.new("UIListLayout", container)
     layout.Padding = UDim.new(0,5)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    
-    -- ✅ ESTA É A LINHA CHAVE:
-    -- Agora todos os cards aceitam a numeração 'order' nos componentes
     layout.SortOrder = Enum.SortOrder.LayoutOrder 
 
     return container
 end
-
---local function CreateCard(page, title)
-    --local card = Instance.new("Frame", pages[page])
-    --card.Size = UDim2.new(0,120,0,160)
-    --card.BackgroundColor3 = COR_FUNDO
-    --card.BorderSizePixel = 1
-   --card.BorderColor3 = Color3.fromRGB(40,40,45)
-    --Instance.new("UICorner", card)
 
 -- ==========================================
     -- Título
