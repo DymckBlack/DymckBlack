@@ -244,7 +244,7 @@ end
 local function AddTimedButton(parent, text, scriptName, order, h)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
-    btn.Size = UDim2.new(1, 0, 0, h or 27)
+    btn.Size = UDim2.new(1, 0, 0, h or 35)
     btn.BackgroundColor3 = COR_VERMELHO
     btn.Text = text
     btn.TextColor3 = Color3.new(1, 1, 1)
@@ -256,9 +256,12 @@ local function AddTimedButton(parent, text, scriptName, order, h)
         btn.BackgroundColor3 = COR_VERDE
         if scriptName then LoadScript(scriptName) end
         task.wait(0.2)
+    if scriptName == "Trial.lua" then
+            task.wait(0.5)    
         if _G.StartTrialFunction then 
         _G.StartTrialFunction() 
         end
+    end
             
         task.wait(1)   
         btn.BackgroundColor3 = COR_VERMELHO
@@ -677,7 +680,7 @@ AddDoubleButtons(raidCard,
 
 -- 2. CARD VOTAÇÂO
 local voteCard = CreateCard("Invasão", "VOTAÇÃO")
-AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selected", 1, 65)
+AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selected", 1, 60)
 AddTimedButton(voteCard, "VOTAR", "Vote_Manual.lua", 2, 29)
 AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3, 29)
 
