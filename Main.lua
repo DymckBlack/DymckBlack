@@ -500,7 +500,9 @@ end
 local function CreateDeckItem(scroll, layout, name, state)
     local itemFrame = Instance.new("Frame", scroll)
     itemFrame.Name = name
-    itemFrame.Size = UDim2.new(0.95, 0, 0, 30)
+    itemFrame.Size = UDim2.new(1, -10, 0, 30)
+    itemFrame.AnchorPoint = Vector2.new(0.5, 0)
+    itemFrame.Position = UDim2.new(0.5, 0, 0, 0)
     itemFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
     itemFrame.ClipsDescendants = true
     Instance.new("UICorner", itemFrame)
@@ -540,8 +542,8 @@ end
 -- 11. -- 10. Não sei o que faz certo ainda. Trocar nome.
 local function CreateDeckList(parent)
     local scroll = Instance.new("ScrollingFrame", parent)
-    scroll.Size = UDim2.new(1, -10, 1, -10)
-    scroll.Position = UDim2.new(0, 5, 0, 5)
+    scroll.Size = UDim2.new(1, -6, 1, -6)
+    scroll.Position = UDim2.new(0, 3, 0, 3)
     scroll.BackgroundTransparency = 1
     scroll.ScrollBarThickness = 4
 
