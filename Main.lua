@@ -537,7 +537,7 @@ end
 -- 9. Não sei o que faz certo ainda. Trocar nome.
 local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
     local i = Instance.new("TextBox", parent)
-    i.Size = UDim2.new(1, -10, 0, 32)
+    i.Size = UDim2.new(1, -10, 0, 30)
     i.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
     i.PlaceholderText = placeholder
     i.Text = stateTable.Decks[deckName][slot]
