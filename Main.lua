@@ -23,6 +23,7 @@ _G.HubState = _G.HubState or {
     Manga = { Name = "" },
     RaidAFK = { Active = false, Decks = {} },
     Trial = { Active = false, Loop = false, Difficulty = "Easy", CardName = "", Counter = 0, Processing = false }
+    StarTrialLogic = { UnitName = "" },
 }
 local State = _G.HubState
 
@@ -732,6 +733,13 @@ AddTimedButton(trialCard, "START TRIAL", "Trial.lua", 3, 27)
 
 -- BOTÃO DE LOOP (Opcional, se quiser deixar o farm infinito)
 AddToggle(trialCard, "AUTO TRIAL", State.Trial, "Loop", "Trial.lua", 4, 27)
+
+-- 2. CARD UP STAR
+local starUpCard = CreateCard("Trial", "UP STAR")
+
+AddTextBox(starUpCard, "Nome da Unidade", State.StarTrialLogic, "UnitName", 1, 35)
+
+AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
 
 -- ==========================================
 -- 📑 TABS
