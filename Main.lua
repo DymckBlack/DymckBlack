@@ -415,25 +415,24 @@ end
 -- 12. Brilha, Brilha estrelinha
 -- ==========================================
 local function HighlightCard(card)
-    -- remove borda antiga se existir
     for _, v in pairs(card:GetChildren()) do
         if v:IsA("UIStroke") then
             v:Destroy()
         end
     end
 
-    local stroke = Instance.new("UIStroke", card)
+    local stroke = Instance.new("UIStroke")
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 🔥 resolve o problema
     stroke.Thickness = 3
+    stroke.Parent = card
 
-    local gradient = Instance.new("UIGradient", stroke)
+    local gradient = Instance.new("UIGradient")
     gradient.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, Color3.fromRGB(255,0,0)),
-        ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255,255,0)),
-        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0,255,0)),
-        ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0,255,255)),
-        ColorSequenceKeypoint.new(0.8, Color3.fromRGB(0,0,255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(255,0,255))
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0,255,0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,255))
     })
+    gradient.Parent = stroke
 
     local tweenService = game:GetService("TweenService")
 
