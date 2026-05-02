@@ -22,8 +22,8 @@ _G.HubState = _G.HubState or {
     Exp = { Name = "", Type = "Common", Amount = "1" },
     Manga = { Name = "" },
     RaidAFK = { Active = false, Decks = {} },
-    Trial = { Active = false, Loop = false, Difficulty = "Easy", CardName = "", Counter = 0, Processing = false }
-    StarTrialLogic = { UnitName = "" },
+    Trial = { Active = false, Loop = false, Difficulty = "Easy", CardName = "", Counter = 0, Processing = false },
+    StarTrialLogic = { UnitName = "" }
 }
 local State = _G.HubState
 
