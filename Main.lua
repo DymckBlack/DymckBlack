@@ -488,7 +488,7 @@ local function AddDeckManager(parent, listCard, h)
     listCard.Visible = isOpened
 
     if isOpened then
-        HighlightCard(listCard) -- 🔥 efeito aqui
+        HighlightCard(listCard.Parent) -- 🔥 efeito aqui
 
         mainTrigger:TweenPosition(UDim2.new(0.85, 0, 0, 0), "Out", "Quad", 0.2, true)
         mainTrigger:TweenSize(UDim2.new(0.15, 0, 1, 0), "Out", "Quad", 0.2, true)
