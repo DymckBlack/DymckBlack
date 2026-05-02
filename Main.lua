@@ -22,7 +22,7 @@ _G.HubState = _G.HubState or {
     Exp = { Name = "", Type = "Common", Amount = "1" },
     Manga = { Name = "" },
     RaidAFK = { Active = false, Decks = {} },
-    Trial = {}
+    Trial = { Active = false, Loop = false, Difficulty = "Easy", CardName = "", Counter = 0, Processing = false }
 }
 local State = _G.HubState
 
@@ -66,6 +66,9 @@ local Database = {
     },
     ExpTypes = {
         "Common","Rare","Epic","Legendary","Mythical"
+    },
+    TrialDifficulties = {
+    "Easy", "Medium", "Hard", "Extreme", "Nightmare"
     }
 }
 _G.HubDatabase = Database
@@ -252,7 +255,12 @@ local function AddTimedButton(parent, text, scriptName, order, h)
     btn.MouseButton1Click:Connect(function()
         btn.BackgroundColor3 = COR_VERDE
         if scriptName then LoadScript(scriptName) end
-        task.wait(1)
+        task.wait(0.2)
+        if _G.StartTrialFunction then 
+        _G.StartTrialFunction() 
+        end
+            
+        task.wait(1)   
         btn.BackgroundColor3 = COR_VERMELHO
     end)
 end
@@ -265,7 +273,7 @@ local function AddTextBox(parent, placeholder, stateTable, key, order, h)
     box.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
     box.PlaceholderText = placeholder
     box.Text = stateTable[key] or ""
-    box.TextColor3 = Color3.new(0, 0, 0)
+    box.TextColor3 = Color3.new(1, 1, 1)
     box.Font = Enum.Font.GothamBold
     box.TextSize = 10
     box.ClipsDescendants = true
@@ -701,6 +709,26 @@ end
 -- Adiciona o botão de controle
 AddDeckManager(raidAfkCard, listCard, deckItems, 35)
 AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
+
+-- ==========================================
+-- 🌀 ABA: TRIAL
+-- ==========================================
+
+-- 1. CARD TRIAL
+local trialCard = CreateCard("Trial", "STAR TRIAL AUTO")
+
+-- Input para o nome da Unidade
+AddTextBox(trialCard, "UNIT NAME", State.Trial, "CardName", 1, 30)
+
+-- Dropdown de Dificuldade (Puxando da Database)
+AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2, 35)
+
+-- BOTÃO DE CLIQUE ÚNICO (Usando sua função!)
+-- Ele vai carregar o "Trial.lua" e dar o Start ao mesmo tempo
+AddTimedButton(trialCard, "START TRIAL", "Trial.lua", 3, 30)
+
+-- BOTÃO DE LOOP (Opcional, se quiser deixar o farm infinito)
+AddToggle(trialCard, "AUTO LOOP FARM", State.Trial, "Loop", "Trial.lua", 4, 30)
 
 -- ==========================================
 -- 📑 TABS
