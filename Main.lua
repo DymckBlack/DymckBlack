@@ -68,6 +68,7 @@ local Database = {
         "Common","Rare","Epic","Legendary","Mythical"
     }
 }
+_G.HubDatabase = Database
 
 for _, name in pairs(Database.Decks) do
     if not _G.HubState.RaidAFK.Decks[name] then
