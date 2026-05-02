@@ -270,7 +270,7 @@ local function AddTextBox(parent, placeholder, stateTable, key, order, h)
     local box = Instance.new("TextBox", parent)
     box.LayoutOrder = order or 0
     box.Size = UDim2.new(1, 0, 0, h or 27)
-    box.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+    box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
     box.PlaceholderText = placeholder
     box.Text = stateTable[key] or ""
     box.TextColor3 = Color3.new(1, 1, 1)
