@@ -34,8 +34,8 @@ local function apertarE()
         State.Active = false
         
         task.spawn(function()
-            print("TRIAL: Aguardando delay de saída (6s)")
-            task.wait(6)
+            print("TRIAL: Aguardando delay de saída (3s)")
+            task.wait(3)
             State.Counter = 0
             State.Processing = false
             print("TRIAL: Contador resetado. Loop Status: " .. tostring(State.Loop))
