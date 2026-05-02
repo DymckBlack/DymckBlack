@@ -1,11 +1,20 @@
--- [[ DYMCKHUB - TRIAL ENGINE MODIFICADO ]]
+-- [[ DYMCKHUB - TRIAL ENGINE MODIFICADO & PROTEGIDO ]]
 local player = game.Players.LocalPlayer
 local vim = game:GetService("VirtualInputManager")
 local rs = game:GetService("ReplicatedStorage")
 local State = _G.HubState.Trial
 
+-- ==========================================
+-- 🛡️ SISTEMA ANTI-DUPLICAÇÃO (SINGLETON)
+-- ==========================================
+if _G.TrialThreadRunning then
+    warn("TRIAL: Motor já está rodando. Encerrando execução redundante.")
+    return 
+end
+
+_G.TrialThreadRunning = true
 local MAX_E = 13
-local isPressing = false -- Trava de segurança para não duplicar cliques
+local isPressing = false 
 
 local function apertarE()
     if isPressing then return end
@@ -38,18 +47,16 @@ local function apertarE()
         end)
     end
     
-    task.wait(0.2) -- Respiro entre cliques
+    task.wait(0.2) 
     isPressing = false
 end
 
 local function pegarMaisProximo(root)
     local alvo = nil
     local distMax = 120
-    local encontrados = 0
     
     for _, v in ipairs(workspace:GetDescendants()) do
         if v:IsA("ProximityPrompt") and v.Enabled and v.Parent then
-            encontrados = encontrados + 1
             local p = v.Parent
             local pos = p:IsA("Model") and p:GetPivot().Position or p.Position
             local d = (root.Position - pos).Magnitude
@@ -59,7 +66,6 @@ local function pegarMaisProximo(root)
             end
         end
     end
-    -- print("TRIAL: Prompts habilitados no mapa: " .. encontrados)
     return alvo
 end
 
@@ -82,12 +88,12 @@ _G.StartTrialFunction = function()
     print("TRIAL: Active = TRUE (Iniciando busca de alvos)")
 end
 
--- Loop de Combate
+-- Loop de Combate (Protegido pela variável Global)
 task.spawn(function()
     local alvoAtual = nil
-    print("TRIAL: Thread de combate iniciada.")
+    print("TRIAL: Thread de combate iniciada com ID único.")
     
-    while true do
+    while _G.TrialThreadRunning do
         task.wait(0.4)
         if State.Active and not State.Processing then
             local char = player.Character
@@ -108,12 +114,9 @@ task.spawn(function()
                     apertarE()
 
                     local timeout = 0
-                    -- Este repeat espera o prompt sumir ou desabilitar antes de ir pro próximo
                     repeat
                         task.wait(0.3)
                         timeout = timeout + 1
-                        -- Log silencioso de espera: 
-                        -- if timeout % 5 == 0 then print("TRIAL: Aguardando prompt limpar... " .. timeout) end
                     until not State.Active or not alvoAtual or not alvoAtual.Parent or not alvoAtual.Enabled or timeout > 20 or State.Processing
                     
                     if timeout > 20 then warn("TRIAL: Timeout no alvo atual! Resetando busca.") end
@@ -122,6 +125,7 @@ task.spawn(function()
             end
         end
     end
+    print("TRIAL: Thread de combate encerrada.")
 end)
 
-print("GeminiHUB: Motor de Trial Carregado com Logs!")
+print("GeminiHUB: Motor de Trial Carregado com Logs e Proteção!")
