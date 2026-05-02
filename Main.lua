@@ -454,7 +454,7 @@ end
 -- ==========================================
 -- 8. GESTOR DE DECKS (ESPECIAL)
 -- ==========================================
-local function AddDeckManager(parent, listCard, h)
+local function AddDeckManager(parent, listCard, deckItems, h)
     local state = _G.HubState.RaidAFK
     
     local container = Instance.new("Frame", parent)
@@ -481,6 +481,19 @@ local function AddDeckManager(parent, listCard, h)
     searchBar.Visible = false
     searchBar.ClipsDescendants = true
     Instance.new("UICorner", searchBar)
+
+    -- 🔎 SISTEMA DE BUSCA
+searchBar:GetPropertyChangedSignal("Text"):Connect(function()
+    local query = searchBar.Text:lower()
+
+    for name, item in pairs(deckItems) do
+        if query == "" then
+            item.Visible = true
+        else
+            item.Visible = name:lower():find(query) ~= nil
+        end
+    end
+end)
 
     -- Lógica de Abrir/Fechar
     local isOpened = false
@@ -570,6 +583,8 @@ local function CreateDeckItem(scroll, layout, name, state)
         task.wait(0.2)
         scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
     end)
+    
+    return itemFrame
 end
 
 -- 11. -- 10. Não sei o que faz certo ainda. Trocar nome.
@@ -675,13 +690,15 @@ local listCard = CreateCard("Invasão", "LISTA DE DECKS")
 listCard.Visible = false
 
 -- Adiciona o botão de controle
-AddDeckManager(raidAfkCard, listCard, 35)
+AddDeckManager(raidAfkCard, listCard, deckItems, 1, 35)
 AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 
 local scroll, layout = CreateDeckList(listCard)
 
+local deckItems = {}
 for _, name in pairs(Database.Decks) do
-    CreateDeckItem(scroll, layout, name, State.RaidAFK)
+    local item = CreateDeckItem(scroll, layout, name, State.RaidAFK)
+    deckItems[name] = item
 end
 
 -- ==========================================
