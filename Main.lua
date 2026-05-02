@@ -699,20 +699,23 @@ AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 35)
 
 -- 5. CARD AUTO RAID AFK
 local raidAfkCard = CreateCard("Invasão", "AUTO RAID AFK")
-local listCard = CreateCard("Invasão", "LISTA DE DECKS")
+local listCard = CreateCard("Invasão", "DECKS")
 listCard.Visible = false
 
+-- Tabela para armazenar as instâncias dos cards (Essencial para a busca!)
 local deckItems = {}
 
--- Adiciona o botão de controle
+-- Adiciona o botão de controle e passa a tabela
 AddDeckManager(raidAfkCard, listCard, deckItems, 35)
 AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 
 local scroll, layout = CreateDeckList(listCard)
 
+-- PREENCHIMENTO DA TABELA (Corrigido para funcionar a pesquisa)
 for _, name in pairs(Database.Decks) do
-    CreateDeckItem(scroll, layout, name, State.RaidAFK)
+    deckItems[name] = CreateDeckItem(scroll, layout, name, State.RaidAFK)
 end
+
 -- ==========================================
 -- 🌀 ABA: TRIAL
 -- ==========================================
