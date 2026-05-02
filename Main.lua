@@ -699,10 +699,14 @@ AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 35)
 
 -- 5. CARD AUTO RAID AFK
 local raidAfkCard = CreateCard("Invasão", "AUTO RAID AFK")
-local listCard = CreateCard("Invasão", "LISTA DE DECKS")
-listCard.Visible = false
 
-local scroll, layout = CreateDeckList(listCard)
+-- cria o card da lista
+local listCardContainer = CreateCard("Invasão", "LISTA DE DECKS")
+local listCardFrame = listCardContainer.Parent
+listCardFrame.Visible = false
+
+-- cria a lista dentro do container correto
+local scroll, layout = CreateDeckList(listCardContainer)
 
 local deckItems = {}
 for _, name in pairs(Database.Decks) do
@@ -710,8 +714,10 @@ for _, name in pairs(Database.Decks) do
     deckItems[name] = item
 end
 
--- Adiciona o botão de controle
-AddDeckManager(raidAfkCard, listCard, deckItems, 35)
+-- botão que controla abrir/fechar
+AddDeckManager(raidAfkCard, listCardFrame, deckItems, 35)
+
+-- toggle
 AddToggle(raidAfkCard, "AUTO RAID", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 
 -- ==========================================
