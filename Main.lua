@@ -537,7 +537,7 @@ end
 -- 9. Não sei o que faz certo ainda. Trocar nome.
 local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
     local i = Instance.new("TextBox", parent)
-    i.Size = UDim2.new(1, -10, 0, 30)
+    i.Size = UDim2.new(1, -10, 0, 28)
     i.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
     i.PlaceholderText = placeholder
     i.Text = stateTable.Decks[deckName][slot]
@@ -677,7 +677,7 @@ AddDoubleButtons(raidCard,
 
 -- 2. CARD VOTAÇÂO
 local voteCard = CreateCard("Invasão", "VOTAÇÃO")
-AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selected", 1, 52)
+AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selected", 1, 65)
 AddTimedButton(voteCard, "VOTAR", "Vote_Manual.lua", 2, 29)
 AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3, 29)
 
@@ -690,8 +690,8 @@ AddTimedButton(levelCard, "UPAR", "Exp.lua", 4, 29)
 
 -- 4. CARD MANGA
 local mangaCard = CreateCard("Invasão", "MANGA")
-AddTextBox(mangaCard, "Nome do Personagem", State.Manga, "Name", 1, 27)
-AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 29)
+AddTextBox(mangaCard, "Nome do Personagem", State.Manga, "Name", 1, 35)
+AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 35)
 
 -- 5. CARD AUTO RAID AFK
 local raidAfkCard = CreateCard("Invasão", "AUTO RAID AFK")
