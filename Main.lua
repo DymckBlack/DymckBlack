@@ -479,6 +479,79 @@ local function AddDeckManager(parent, listCard, h)
     end)
 end
 
+-- 9. Não sei o que faz certo ainda. Trocar nome.
+local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
+    local i = Instance.new("TextBox", parent)
+    i.Size = UDim2.new(0.9, 0, 0, 25)
+    i.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    i.PlaceholderText = placeholder
+    i.Text = stateTable.Decks[deckName][slot]
+    i.TextColor3 = Color3.new(1, 1, 1)
+    i.Font = Enum.Font.Gotham
+    i.TextSize = 10
+    Instance.new("UICorner", i)
+
+    i.FocusLost:Connect(function()
+        stateTable.Decks[deckName][slot] = i.Text
+    end)
+end
+
+-- 10. Não sei o que faz certo ainda. Trocar nome.
+local function CreateDeckItem(scroll, layout, name, state)
+    local itemFrame = Instance.new("Frame", scroll)
+    itemFrame.Name = name
+    itemFrame.Size = UDim2.new(0.95, 0, 0, 30)
+    itemFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+    itemFrame.ClipsDescendants = true
+    Instance.new("UICorner", itemFrame)
+
+    local btn = Instance.new("TextButton", itemFrame)
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.BackgroundTransparency = 1
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 10
+
+    local inputCont = Instance.new("Frame", itemFrame)
+    inputCont.Size = UDim2.new(1, 0, 0, 85)
+    inputCont.Position = UDim2.new(0, 0, 0, 30)
+    inputCont.BackgroundTransparency = 1
+    Instance.new("UIListLayout", inputCont).Padding = UDim.new(0, 2)
+
+    -- usa a função
+    CreateCharInput(inputCont, state, name, "char1", "Personagem 1")
+    CreateCharInput(inputCont, state, name, "char2", "Personagem 2")
+    CreateCharInput(inputCont, state, name, "char3", "Personagem 3")
+
+    local aberto = false
+    btn.MouseButton1Click:Connect(function()
+        aberto = not aberto
+        itemFrame:TweenSize(
+            aberto and UDim2.new(0.95, 0, 0, 120) or UDim2.new(0.95, 0, 0, 30),
+            "Out","Quad",0.2,true
+        )
+
+        task.wait(0.2)
+        scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
+    end)
+end
+
+-- 11. -- 10. Não sei o que faz certo ainda. Trocar nome.
+local function CreateDeckList(parent)
+    local scroll = Instance.new("ScrollingFrame", parent)
+    scroll.Size = UDim2.new(1, -10, 1, -10)
+    scroll.Position = UDim2.new(0, 5, 0, 5)
+    scroll.BackgroundTransparency = 1
+    scroll.ScrollBarThickness = 4
+
+    local layout = Instance.new("UIListLayout", scroll)
+    layout.Padding = UDim.new(0, 5)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+    return scroll, layout
+end
+
 -- ==========================================
 -- 🌍 ABA: GLOBAL
 -- ==========================================
@@ -569,68 +642,10 @@ listCard.Visible = false
 AddDeckManager(raidAfkCard, listCard, 35)
 AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 
--- Criar o ScrollingFrame dentro do listCard
-local scroll = Instance.new("ScrollingFrame", listCard)
-scroll.Size = UDim2.new(1, -10, 1, -10)
-scroll.Position = UDim2.new(0, 5, 0, 5)
-scroll.BackgroundTransparency = 1
-scroll.ScrollBarThickness = 4
-scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+local scroll, layout = CreateDeckList(listCard)
 
-local layout = Instance.new("UIListLayout", scroll)
-layout.Padding = UDim.new(0, 5)
-layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
--- Gerar os itens da lista
 for _, name in pairs(Database.Decks) do
-    local itemFrame = Instance.new("Frame", scroll)
-    itemFrame.Name = name
-    itemFrame.Size = UDim2.new(0.95, 0, 0, 30)
-    itemFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
-    itemFrame.ClipsDescendants = true
-    Instance.new("UICorner", itemFrame)
-
-    local btn = Instance.new("TextButton", itemFrame)
-    btn.Size = UDim2.new(1, 0, 0, 30)
-    btn.BackgroundTransparency = 1
-    btn.Text = name
-    btn.TextColor3 = Color3.new(1, 1, 1)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 10
-
-    -- Container dos Inputs (Escondido inicialmente)
-    local inputCont = Instance.new("Frame", itemFrame)
-    inputCont.Size = UDim2.new(1, 0, 0, 85)
-    inputCont.Position = UDim2.new(0, 0, 0, 30)
-    inputCont.BackgroundTransparency = 1
-    Instance.new("UIListLayout", inputCont).Padding = UDim.new(0, 2)
-
-    -- Função interna para criar os inputs de personagem
-    local function AddCharInput(slot, placeholder)
-        local i = Instance.new("TextBox", inputCont)
-        i.Size = UDim2.new(0.9, 0, 0, 25)
-        i.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-        i.PlaceholderText = placeholder
-        i.Text = State.RaidAFK.Decks[name][slot]
-        i.TextColor3 = Color3.new(1, 1, 1)
-        i.Font = Enum.Font.Gotham
-        i.TextSize = 10
-        Instance.new("UICorner", i)
-        i.FocusLost:Connect(function() State.RaidAFK.Decks[name][slot] = i.Text end)
-    end
-
-    AddCharInput("char1", "Personagem 1")
-    AddCharInput("char2", "Personagem 2")
-    AddCharInput("char3", "Personagem 3")
-
-    -- Lógica de Expandir
-    local aberto = false
-    btn.MouseButton1Click:Connect(function()
-        aberto = not aberto
-        itemFrame:TweenSize(aberto and UDim2.new(0.95, 0, 0, 120) or UDim2.new(0.95, 0, 0, 30), "Out", "Quad", 0.2, true)
-        task.wait(0.2)
-        scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
-    end)
+    CreateDeckItem(scroll, layout, name, State.RaidAFK)
 end
 
 -- ==========================================
