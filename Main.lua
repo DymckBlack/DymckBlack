@@ -465,7 +465,7 @@ local function AddDeckManager(parent, listCard, h)
     local mainTrigger = Instance.new("TextButton", container)
     mainTrigger.Size = UDim2.new(1, 0, 1, 0)
     mainTrigger.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
-    mainTrigger.Text = "🔍 Abrir Decks / Pesquisar"
+    mainTrigger.Text = "Decks/Pesquisa"
     mainTrigger.TextColor3 = Color3.new(1, 1, 1)
     mainTrigger.Font = Enum.Font.GothamBold
     mainTrigger.TextSize = 11
