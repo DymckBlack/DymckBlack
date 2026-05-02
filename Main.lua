@@ -715,7 +715,7 @@ AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lu
 -- ==========================================
 
 -- 1. CARD TRIAL
-local trialCard = CreateCard("Trial", "STAR TRIAL AUTO")
+local trialCard = CreateCard("Trial", "STAR TRIAL")
 
 -- Input para o nome da Unidade
 AddTextBox(trialCard, "UNIT NAME", State.Trial, "CardName", 1, 30)
