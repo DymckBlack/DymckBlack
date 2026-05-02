@@ -385,10 +385,10 @@ local function AddSearchBox(parent, placeholder, list, stateTable, key, order, h
 
     local box = Instance.new("TextBox", container)
     box.Size = UDim2.new(1, 0, 0, (h and h*0.5) or 27)
-    box.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+    box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
     box.PlaceholderText = placeholder
     box.Text = ""
-    box.TextColor3 = Color3.new(0, 0, 0)
+    box.TextColor3 = Color3.new(1, 1, 1)
     box.Font = Enum.Font.GothamBold
     box.TextSize = 10
     Instance.new("UICorner", box)
@@ -537,7 +537,7 @@ end
 -- 9. Não sei o que faz certo ainda. Trocar nome.
 local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
     local i = Instance.new("TextBox", parent)
-    i.Size = UDim2.new(1, -10, 0, 25)
+    i.Size = UDim2.new(1, -10, 0, 32)
     i.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
     i.PlaceholderText = placeholder
     i.Text = stateTable.Decks[deckName][slot]
