@@ -376,15 +376,15 @@ end
 local function AddSearchBox(parent, placeholder, list, stateTable, key, order, h)
     local container = Instance.new("Frame", parent)
     container.LayoutOrder = order or 0
-    container.Size = UDim2.new(1, 0, 0, h or 52)
+    container.Size = UDim2.new(1, 0, 0, h or 65)
     container.BackgroundTransparency = 1
 
     local layout = Instance.new("UIListLayout", container)
-    layout.Padding = UDim.new(0, 2)
+    layout.Padding = UDim.new(0, 3)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
     local box = Instance.new("TextBox", container)
-    box.Size = UDim2.new(1, 0, 0, (h and h*0.5) or 27)
+    box.Size = UDim2.new(1, 0, 0, (h and h*0.5) or 32)
     box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
     box.PlaceholderText = placeholder
     box.Text = ""
