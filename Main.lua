@@ -482,7 +482,7 @@ local function AddDeckManager(parent, listCard, deckItems, h)
 
     local searchBar = Instance.new("TextBox", container)
     searchBar.Size = UDim2.new(0, 0, 1, 0)
-    searchBar.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+    searchBar.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
     searchBar.PlaceholderText = "Pesquisar..."
     searchBar.Text = ""
     searchBar.TextColor3 = Color3.new(1,1,1)
@@ -538,7 +538,7 @@ end
 local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
     local i = Instance.new("TextBox", parent)
     i.Size = UDim2.new(1, -10, 0, 25)
-    i.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    i.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
     i.PlaceholderText = placeholder
     i.Text = stateTable.Decks[deckName][slot]
     i.TextColor3 = Color3.new(1, 1, 1)
