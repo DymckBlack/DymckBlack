@@ -702,8 +702,10 @@ local raidAfkCard = CreateCard("Invasão", "AUTO RAID AFK")
 local listCard = CreateCard("Invasão", "LISTA DE DECKS")
 listCard.Visible = false
 
+local deckItems = {}
+
 -- Adiciona o botão de controle
-AddDeckManager(raidAfkCard, listCard, 35)
+AddDeckManager(raidAfkCard, listCard, deckItems, 35)
 AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 
 local scroll, layout = CreateDeckList(listCard)
