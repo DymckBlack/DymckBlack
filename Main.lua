@@ -698,7 +698,7 @@ AddTextBox(mangaCard, "Personagem", State.Manga, "Name", 1, 35)
 AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 35)
 
 -- 5. CARD AUTO RAID AFK
-local raidAfkCard = CreateCard("Invasão", "AUTO RAID AFK")
+local raidAfkCard = CreateCard("Invasão", "RAID AFK")
 local listCard = CreateCard("Invasão", "DECKS")
 listCard.Visible = false
 
@@ -707,7 +707,7 @@ local deckItems = {}
 
 -- Adiciona o botão de controle e passa a tabela
 AddDeckManager(raidAfkCard, listCard, deckItems, 35)
-AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
+AddToggle(raidAfkCard, "AUTO RAID", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 
 local scroll, layout = CreateDeckList(listCard)
 
@@ -739,7 +739,7 @@ AddToggle(trialCard, "AUTO TRIAL", State.Trial, "Loop", "Trial.lua", 4, 27)
 -- 2. CARD UP STAR
 local starUpCard = CreateCard("Trial", "UP STAR")
 
-AddTextBox(starUpCard, "Nome da Unidade", State.StarTrialLogic, "UnitName", 1, 35)
+AddTextBox(starUpCard, "Personagem", State.StarTrialLogic, "UnitName", 1, 35)
 
 AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
 
