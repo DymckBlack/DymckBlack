@@ -501,7 +501,7 @@ local function AddDeckManager(parent, listCard, h)
      else
         mainTrigger:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.2, true)
         mainTrigger:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.2, true)
-        mainTrigger.Text = "🔍 Abrir Decks / Pesquisar"
+        mainTrigger.Text = "Decks/Pesquisa"
 
         searchBar.Text = ""
         searchBar:TweenSize(UDim2.new(0, 0, 1, 0), "Out", "Quad", 0.2, true)
