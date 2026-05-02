@@ -482,7 +482,7 @@ end
 -- 9. Não sei o que faz certo ainda. Trocar nome.
 local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
     local i = Instance.new("TextBox", parent)
-    i.Size = UDim2.new(0.9, 0, 0, 25)
+    i.Size = UDim2.new(1, -10, 0, 25)
     i.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
     i.PlaceholderText = placeholder
     i.Text = stateTable.Decks[deckName][slot]
@@ -500,9 +500,7 @@ end
 local function CreateDeckItem(scroll, layout, name, state)
     local itemFrame = Instance.new("Frame", scroll)
     itemFrame.Name = name
-    itemFrame.Size = UDim2.new(1, -10, 0, 30)
-    itemFrame.AnchorPoint = Vector2.new(0.5, 0)
-    itemFrame.Position = UDim2.new(0.5, 0, 0, 0)
+    itemFrame.Size = UDim2.new(0.95, 0, 0, 30)
     itemFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
     itemFrame.ClipsDescendants = true
     Instance.new("UICorner", itemFrame)
@@ -519,7 +517,9 @@ local function CreateDeckItem(scroll, layout, name, state)
     inputCont.Size = UDim2.new(1, 0, 0, 85)
     inputCont.Position = UDim2.new(0, 0, 0, 30)
     inputCont.BackgroundTransparency = 1
-    Instance.new("UIListLayout", inputCont).Padding = UDim.new(0, 2)
+    local layoutInputs = Instance.new("UIListLayout", inputCont)
+    layoutInputs.Padding = UDim.new(0, 2)
+    layoutInputs.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
     -- usa a função
     CreateCharInput(inputCont, state, name, "char1", "Personagem 1")
@@ -542,8 +542,9 @@ end
 -- 11. -- 10. Não sei o que faz certo ainda. Trocar nome.
 local function CreateDeckList(parent)
     local scroll = Instance.new("ScrollingFrame", parent)
-    scroll.Size = UDim2.new(1, -6, 1, -6)
-    scroll.Position = UDim2.new(0, 3, 0, 3)
+    scroll.Size = UDim2.new(1, 0, 1, 0)
+    scroll.Position = UDim2.new(0, 0, 0, 0)
+    scroll.BorderSizePixel = 0
     scroll.BackgroundTransparency = 1
     scroll.ScrollBarThickness = 4
 
