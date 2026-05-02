@@ -445,39 +445,31 @@ local function AddDeckManager(parent, listCard, h)
     -- Lógica de Abrir/Fechar
     local isOpened = false
     mainTrigger.MouseButton1Click:Connect(function()
-        isOpened = not isOpened
-        listCard.Visible = isOpened
-        
-        if isOpened then
-            mainTrigger:TweenPosition(UDim2.new(0.85, 0, 0, 0), "Out", "Quad", 0.2, true)
-            mainTrigger:TweenSize(UDim2.new(0.15, 0, 1, 0), "Out", "Quad", 0.2, true)
-            mainTrigger.Text = "X"
-            searchBar.Visible = true
-            searchBar:TweenSize(UDim2.new(0.83, 0, 1, 0), "Out", "Quad", 0.2, true)
-        else
-            mainTrigger:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.2, true)
-            mainTrigger:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.2, true)
-            mainTrigger.Text = "🔍 Abrir Decks / Pesquisar"
-            searchBar.Text = ""
-            searchBar:TweenSize(UDim2.new(0, 0, 1, 0), "Out", "Quad", 0.2, true)
-            task.wait(0.2)
-            searchBar.Visible = false
-        end
-    end)
+    isOpened = not isOpened
+    listCard.Visible = isOpened
 
-    -- Filtro de Pesquisa (Busca os itens dentro do ScrollingFrame do card de lista)
-    searchBar:GetPropertyChangedSignal("Text"):Connect(function()
-        local txt = searchBar.Text:lower()
-        local scroll = listCard:FindFirstChildOfClass("ScrollingFrame")
-        if not scroll then return end
-        
-        for _, item in pairs(scroll:GetChildren()) do
-            if item:IsA("Frame") then
-                item.Visible = (txt == "" or item.Name:lower():find(txt))
-            end
-        end
-    end)
-end
+    if isOpened then
+        HighlightCard(listCard) -- 🔥 efeito aqui
+
+        mainTrigger:TweenPosition(UDim2.new(0.85, 0, 0, 0), "Out", "Quad", 0.2, true)
+        mainTrigger:TweenSize(UDim2.new(0.15, 0, 1, 0), "Out", "Quad", 0.2, true)
+        mainTrigger.Text = "X"
+
+        searchBar.Visible = true
+        searchBar:TweenSize(UDim2.new(0.83, 0, 1, 0), "Out", "Quad", 0.2, true)
+
+    else
+        mainTrigger:TweenSize(UDim2.new(1, 0, 1, 0), "Out", "Quad", 0.2, true)
+        mainTrigger:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.2, true)
+        mainTrigger.Text = "🔍 Abrir Decks / Pesquisar"
+
+        searchBar.Text = ""
+        searchBar:TweenSize(UDim2.new(0, 0, 1, 0), "Out", "Quad", 0.2, true)
+
+        task.wait(0.2)
+        searchBar.Visible = false
+    end
+end)
 
 -- 9. Não sei o que faz certo ainda. Trocar nome.
 local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
@@ -553,6 +545,44 @@ local function CreateDeckList(parent)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
     return scroll, layout
+end
+
+-- 12. Brilha, Brilha estrelinha
+local function HighlightCard(card)
+    -- remove borda antiga se existir
+    for _, v in pairs(card:GetChildren()) do
+        if v:IsA("UIStroke") then
+            v:Destroy()
+        end
+    end
+
+    local stroke = Instance.new("UIStroke", card)
+    stroke.Thickness = 3
+
+    local gradient = Instance.new("UIGradient", stroke)
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255,0,0)),
+        ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255,255,0)),
+        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0,255,0)),
+        ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0,255,255)),
+        ColorSequenceKeypoint.new(0.8, Color3.fromRGB(0,0,255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255,0,255))
+    })
+
+    local tweenService = game:GetService("TweenService")
+
+    local tween = tweenService:Create(
+        gradient,
+        TweenInfo.new(2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1),
+        {Rotation = 360}
+    )
+
+    tween:Play()
+
+    task.delay(5, function()
+        tween:Cancel()
+        stroke:Destroy()
+    end)
 end
 
 -- ==========================================
