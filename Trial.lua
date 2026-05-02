@@ -1,4 +1,4 @@
--- [[ DYMCKHUB - TRIAL ENGINE MODIFICADO & PROTEGIDO ]]
+-- [[ DYMCKHUB - TRIAL ENGINE STEALTH ]]
 local player = game.Players.LocalPlayer
 local vim = game:GetService("VirtualInputManager")
 local rs = game:GetService("ReplicatedStorage")
@@ -8,7 +8,6 @@ local State = _G.HubState.Trial
 -- 🛡️ SISTEMA ANTI-DUPLICAÇÃO (SINGLETON)
 -- ==========================================
 if _G.TrialThreadRunning then
-    warn("TRIAL: Motor já está rodando. Encerrando execução redundante.")
     return 
 end
 
@@ -20,28 +19,22 @@ local function apertarE()
     if isPressing then return end
     isPressing = true
     
-    print("--- Tentando apertar E ---")
     vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
     task.wait(0.1)
     vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
     
     State.Counter = State.Counter + 1
-    warn("TRIAL LOG: Clique " .. State.Counter .. "/" .. MAX_E)
     
     if State.Counter >= MAX_E and not State.Processing then
-        print("TRIAL: Meta atingida, iniciando limpeza...")
         State.Processing = true
         State.Active = false
         
         task.spawn(function()
-            print("TRIAL: Aguardando delay de saída (3s)")
             task.wait(3)
             State.Counter = 0
             State.Processing = false
-            print("TRIAL: Contador resetado. Loop Status: " .. tostring(State.Loop))
             
             if State.Loop then
-                print("TRIAL: Reiniciando via Loop...")
                 _G.StartTrialFunction()
             end
         end)
@@ -70,28 +63,21 @@ local function pegarMaisProximo(root)
 end
 
 _G.StartTrialFunction = function()
-    if State.Processing then 
-        warn("TRIAL: Bloqueado! Ainda processando a rodada anterior.")
-        return 
-    end
+    if State.Processing then return end
     
     State.Counter = 0
     State.Processing = false
     
     local card = State.CardName ~= "" and State.CardName or "Luffy"
-    print("TRIAL: Iniciando Server Remote | Dificuldade: " .. State.Difficulty .. " | Card: " .. card)
-    
     rs.Remotes.StarTrial:FireServer("Start", State.Difficulty, card)
     
     task.wait(3.5)
     State.Active = true
-    print("TRIAL: Active = TRUE (Iniciando busca de alvos)")
 end
 
--- Loop de Combate (Protegido pela variável Global)
+-- Loop de Combate
 task.spawn(function()
     local alvoAtual = nil
-    print("TRIAL: Thread de combate iniciada com ID único.")
     
     while _G.TrialThreadRunning do
         task.wait(0.4)
@@ -102,7 +88,6 @@ task.spawn(function()
             if root then
                 if not alvoAtual then
                     alvoAtual = pegarMaisProximo(root)
-                    if alvoAtual then print("TRIAL: Alvo encontrado! Indo até ele.") end
                 end
 
                 if alvoAtual and alvoAtual.Parent then
@@ -119,13 +104,9 @@ task.spawn(function()
                         timeout = timeout + 1
                     until not State.Active or not alvoAtual or not alvoAtual.Parent or not alvoAtual.Enabled or timeout > 20 or State.Processing
                     
-                    if timeout > 20 then warn("TRIAL: Timeout no alvo atual! Resetando busca.") end
                     alvoAtual = nil
                 end
             end
         end
     end
-    print("TRIAL: Thread de combate encerrada.")
 end)
-
-print("GeminiHUB: Motor de Trial Carregado com Logs e Proteção!")
