@@ -630,7 +630,7 @@ AddToggle(collectCard, "Coleta AFK", State, "AutoCollectActive", "Collect.lua", 
 
 -- 3. CARD ROLL
 local rollCard = CreateCard("Global", "ROLL UR")
-AddTextBox(rollCard, "Nome do Personagem", State.Roll, "Target", 1, 35)
+AddTextBox(rollCard, "Personagem", State.Roll, "Target", 1, 35)
 AddToggle(rollCard, "INICIAR ROLL", State.Roll, "Active", "Grade.lua", 2, 35)
 
 -- 4. CARD ANTI AFK
@@ -647,7 +647,7 @@ AddTimedButton(towerCard, "Iniciar Torre", "Tower.lua", 1, 35)
 
 -- 2. CARD TOWER ROLL
 local t_rollCard = CreateCard("Torre", "TOWER ROLL")
-AddTextBox(t_rollCard, "Nome do Personagem", State.Tower, "Target", 1, 35)
+AddTextBox(t_rollCard, "Personagem", State.Tower, "Target", 1, 35)
 AddToggle(t_rollCard, "INICIAR ROLL", State.Tower, "Active", "T_Roll.lua", 2, 35)
 
 -- 3. CARD SET TOWER
@@ -686,14 +686,14 @@ AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3, 29)
 
 -- 3. CARD LEVEL UP
 local levelCard = CreateCard("Invasão", "LEVEL UP")
-AddTextBox(levelCard, "Nome do Personagem", State.Exp, "Name", 1, 27)
+AddTextBox(levelCard, "Personagem", State.Exp, "Name", 1, 27)
 AddTextBox(levelCard, "Quantidade", State.Exp, "Amount", 2, 27)
 AddDropdown(levelCard, Database.ExpTypes, State.Exp, "Type", 3, 27)
 AddTimedButton(levelCard, "UPAR", "Exp.lua", 4, 29)
 
 -- 4. CARD MANGA
 local mangaCard = CreateCard("Invasão", "MANGA")
-AddTextBox(mangaCard, "Nome do Personagem", State.Manga, "Name", 1, 35)
+AddTextBox(mangaCard, "Personagem", State.Manga, "Name", 1, 35)
 AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 35)
 
 -- 5. CARD AUTO RAID AFK
@@ -711,7 +711,7 @@ end
 
 -- Adiciona o botão de controle
 AddDeckManager(raidAfkCard, listCard, deckItems, 35)
-AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
+AddToggle(raidAfkCard, "AUTO RAID", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 
 -- ==========================================
 -- 🌀 ABA: TRIAL
@@ -721,7 +721,7 @@ AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lu
 local trialCard = CreateCard("Trial", "TRIAL")
 
 -- Input para o nome da Unidade
-AddTextBox(trialCard, "UNIT NAME", State.Trial, "CardName", 1, 27)
+AddTextBox(trialCard, "Personagem", State.Trial, "CardName", 1, 27)
 
 -- Dropdown de Dificuldade (Puxando da Database)
 AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2, 27)
@@ -731,7 +731,7 @@ AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2,
 AddTimedButton(trialCard, "START TRIAL", "Trial.lua", 3, 27)
 
 -- BOTÃO DE LOOP (Opcional, se quiser deixar o farm infinito)
-AddToggle(trialCard, "AUTO LOOP FARM", State.Trial, "Loop", "Trial.lua", 4, 27)
+AddToggle(trialCard, "AUTO TRIAL", State.Trial, "Loop", "Trial.lua", 4, 27)
 
 -- ==========================================
 -- 📑 TABS
