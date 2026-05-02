@@ -721,17 +721,17 @@ AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lu
 local trialCard = CreateCard("Trial", "STAR TRIAL")
 
 -- Input para o nome da Unidade
-AddTextBox(trialCard, "UNIT NAME", State.Trial, "CardName", 1, 30)
+AddTextBox(trialCard, "UNIT NAME", State.Trial, "CardName", 1, 27)
 
 -- Dropdown de Dificuldade (Puxando da Database)
-AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2, 35)
+AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2, 27)
 
 -- BOTÃO DE CLIQUE ÚNICO (Usando sua função!)
 -- Ele vai carregar o "Trial.lua" e dar o Start ao mesmo tempo
-AddTimedButton(trialCard, "START TRIAL", "Trial.lua", 3, 30)
+AddTimedButton(trialCard, "START TRIAL", "Trial.lua", 3, 27)
 
 -- BOTÃO DE LOOP (Opcional, se quiser deixar o farm infinito)
-AddToggle(trialCard, "AUTO LOOP FARM", State.Trial, "Loop", "Trial.lua", 4, 30)
+AddToggle(trialCard, "AUTO LOOP FARM", State.Trial, "Loop", "Trial.lua", 4, 27)
 
 -- ==========================================
 -- 📑 TABS
