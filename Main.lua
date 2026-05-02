@@ -422,7 +422,8 @@ local function HighlightCard(card)
     end
 
     local stroke = Instance.new("UIStroke")
-    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border -- 🔥 resolve o problema
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Color = Color3.new(1,1,1)
     stroke.Thickness = 3
     stroke.Parent = card
 
