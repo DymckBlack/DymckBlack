@@ -457,7 +457,7 @@ local function HighlightCard(card)
     )
 
     tween:Play()
-
+    
     task.delay(5, function()
         tween:Cancel()
         stroke:Destroy()
@@ -508,14 +508,14 @@ searchBar:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
-    -- Lógica de Abrir/Fechar
+     -- Lógica de Abrir/Fechar
     local isOpened = false
     mainTrigger.MouseButton1Click:Connect(function()
     isOpened = not isOpened
     listCard.Visible = isOpened
 
     if isOpened then
-        HighlightCard(listCardFrame) -- 🔥 efeito aqui
+        HighlightCard(listCard.Parent) -- 🔥 efeito aqui
 
         mainTrigger:TweenPosition(UDim2.new(0.85, 0, 0, 0), "Out", "Quad", 0.2, true)
         mainTrigger:TweenSize(UDim2.new(0.15, 0, 1, 0), "Out", "Quad", 0.2, true)
@@ -699,26 +699,18 @@ AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 35)
 
 -- 5. CARD AUTO RAID AFK
 local raidAfkCard = CreateCard("Invasão", "AUTO RAID AFK")
+local listCard = CreateCard("Invasão", "LISTA DE DECKS")
+listCard.Visible = false
 
--- cria o card da lista
-local listCardContainer = CreateCard("Invasão", "LISTA DE DECKS")
-local listCardFrame = listCardContainer.Parent
-listCardFrame.Visible = false
+-- Adiciona o botão de controle
+AddDeckManager(raidAfkCard, listCard, 35)
+AddToggle(raidAfkCard, "ATIVAR AUTO JOIN", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 
--- cria a lista dentro do container correto
-local scroll, layout = CreateDeckList(listCardContainer)
+local scroll, layout = CreateDeckList(listCard)
 
-local deckItems = {}
 for _, name in pairs(Database.Decks) do
-    local item = CreateDeckItem(scroll, layout, name, State.RaidAFK)
-    deckItems[name] = item
+    CreateDeckItem(scroll, layout, name, State.RaidAFK)
 end
-
--- botão que controla abrir/fechar
-AddDeckManager(raidAfkCard, listCardFrame, deckItems, 35)
-
--- toggle
-AddToggle(raidAfkCard, "AUTO RAID", State.RaidAFK, "Active", "Raid_Afk.lua", 2, 40)
 -- ==========================================
 -- 🌀 ABA: TRIAL
 -- ==========================================
