@@ -937,38 +937,62 @@ sendBtn.TextSize = 10
 Instance.new("UICorner", sendBtn)
 
 sendBtn.MouseButton1Click:Connect(function()
+    LoadScript("Expedition.lua")
+    print("🟡 [EXPEDITION] Botão ENVIAR clicado")
+
     for i = 1, 3 do
         local key = "Marine "..i
         local marine = State.ExpeditionManager[key]
 
-        if not marine.Active then
-            local target = selected[key]
-            local data = Database.Expedition[target]
-
-            if data then
-                local parts = {}
-                for p in string.gmatch(data.Time, "%d+") do
-                    table.insert(parts, tonumber(p))
-                end
-
-                local seconds = 0
-                if #parts == 2 then
-                    seconds = parts[1]*60 + parts[2]
-                elseif #parts == 3 then
-                    seconds = parts[1]*3600 + parts[2]*60 + parts[3]
-                end
-
-                if seconds > 0 then
-                    marine.Target = target
-                    marine.Active = true
-                    marine.EndTime = tick() + seconds
-
-                    print("[EXPEDITION] Enviado:", key, target, seconds.."s")
-                else
-                    warn("Tempo inválido para:", target)
-                end
-            end
+        -- 🚫 já está ativo
+        if marine.Active then
+            warn("⛔ Já ativo:", key)
+            continue
         end
+
+        local target = selected[key]
+
+        -- 🚫 sem target
+        if not target or target == "" then
+            warn("❌ Nenhum target selecionado:", key)
+            continue
+        end
+
+        local data = Database.Expedition[target]
+
+        -- 🚫 target inválido
+        if not data then
+            warn("❌ Target inválido:", key, target)
+            continue
+        end
+
+        -- ⏱️ converter tempo
+        local parts = {}
+        for p in string.gmatch(data.Time, "%d+") do
+            table.insert(parts, tonumber(p))
+        end
+
+        local seconds = 0
+
+        if #parts == 2 then
+            seconds = parts[1]*60 + parts[2]
+        elseif #parts == 3 then
+            seconds = parts[1]*3600 + parts[2]*60 + parts[3]
+        end
+
+        -- 🚫 tempo inválido
+        if seconds <= 0 then
+            warn("❌ Tempo inválido:", key, target)
+            continue
+        end
+
+        -- ✅ ATIVA CORRETAMENTE
+        marine.Target = target
+        marine.Active = true
+        marine.EndTime = tick() + seconds
+        marine.Sent = false -- 🔥 ESSENCIAL PRO MOTOR
+
+        print("✅ [EXPEDITION] Ativado:", key, "| Target:", target, "| Tempo:", seconds.."s")
     end
 end)
 
