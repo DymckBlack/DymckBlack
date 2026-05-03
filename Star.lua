@@ -1,19 +1,27 @@
--- Star.lua (Hospedado no GitHub)
+-- [[ DYMCK HUB - UPAR ESTRELA ]]
+
+-- 1. TRAVA DE SEGURANÇA (DEBOUNCE)
+if _G.StarUpSpamProtection then 
+    return 
+end
+
 local State = _G.HubState.StarTrialLogic
 
-if State and State.UnitName ~= "" then
-    warn("⭐ STAR TRIAL: Tentando dar UP na unidade: " .. tostring(State.UnitName))
+if State and State.UnitName and State.UnitName ~= "" then
+    _G.StarUpSpamProtection = true -- Ativa a trava
 
     local args = {
         [1] = "Star",
-        [2] = State.UnitName -- O sinal de '=' e a vírgula acima são essenciais
+        [2] = State.UnitName
     }
 
     pcall(function()
         local remote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("StarTrial")
         remote:FireServer(unpack(args))
-        print("✅ STAR TRIAL: Remote enviado com sucesso!")
     end)
-else
-    warn("⚠️ STAR TRIAL: Falha ao iniciar - Nome da unidade está vazio ou State inexistente.")
+
+    -- Aguarda 0.8 segundos antes de permitir um novo upgrade
+    task.delay(0.8, function()
+        _G.StarUpSpamProtection = false
+    end)
 end
