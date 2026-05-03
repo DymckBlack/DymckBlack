@@ -34,7 +34,8 @@ local function apertarE()
             State.Counter = 0
             State.Processing = false
             
-            if State.Loop and _G.StartTrialFunction then
+            -- Só reinicia o loop se não houver Raid pendente
+            if State.Loop and _G.StartTrialFunction and not _G.RaidPauseActive then
                 _G.StartTrialFunction()
             end
         end)
@@ -63,8 +64,10 @@ local function pegarMaisProximo(root)
 end
 
 _G.StartTrialFunction = function()
-    -- Segurança contra HubState inexistente
-    if not _G.HubState or State.Processing then return end
+    -- Segurança contra HubState inexistente ou Pausa de Raid
+    if not _G.HubState or State.Processing or _G.RaidPauseActive then 
+        return 
+    end
     
     State.Counter = 0
     State.Processing = false
@@ -84,40 +87,47 @@ task.spawn(function()
     local alvoAtual = nil
     
     while _G.TrialThreadRunning do
-        -- Se o HubState sumir, mata o loop e reseta a trava
+        -- Se o HubState sumir, mata o loop
         if not _G.HubState then
             _G.TrialThreadRunning = false
             break
         end
 
-        task.wait(0.4)
-        
-        if State.Active and not State.Processing then
-            local char = player.Character
-            local root = char and char:FindFirstChild("HumanoidRootPart")
+        -- 🛡️ MONITOR DE RAID: Se a Raid estiver ativa, o loop fica em standby
+        if _G.RaidPauseActive then
+            State.Active = false
+            task.wait(5) -- Verifica a cada 5 segundos
+        else
+            task.wait(0.4)
+            
+            if State.Active and not State.Processing then
+                local char = player.Character
+                local root = char and char:FindFirstChild("HumanoidRootPart")
 
-            if root then
-                if not alvoAtual then
-                    alvoAtual = pegarMaisProximo(root)
-                end
+                if root then
+                    if not alvoAtual then
+                        alvoAtual = pegarMaisProximo(root)
+                    end
 
-                if alvoAtual and alvoAtual.Parent then
-                    pcall(function()
-                        local p = alvoAtual.Parent
-                        local pos = p:IsA("Model") and p:GetPivot().Position or p.Position
+                    if alvoAtual and alvoAtual.Parent then
+                        pcall(function()
+                            local p = alvoAtual.Parent
+                            local pos = p:IsA("Model") and p:GetPivot().Position or p.Position
 
-                        root.CFrame = CFrame.new(pos + Vector3.new(0, 2, 0))
-                        task.wait(0.3)
-                        apertarE()
-
-                        local timeout = 0
-                        repeat
+                            root.CFrame = CFrame.new(pos + Vector3.new(0, 2, 0))
                             task.wait(0.3)
-                            timeout = timeout + 1
-                        until not State.Active or not alvoAtual or not alvoAtual.Parent or not alvoAtual.Enabled or timeout > 20 or State.Processing
-                    end)
-                    
-                    alvoAtual = nil
+                            apertarE()
+
+                            local timeout = 0
+                            repeat
+                                task.wait(0.3)
+                                timeout = timeout + 1
+                                -- Sai do repeat se a Raid ativar no meio do processo
+                            until not State.Active or not alvoAtual or not alvoAtual.Parent or not alvoAtual.Enabled or timeout > 20 or State.Processing or _G.RaidPauseActive
+                        end)
+                        
+                        alvoAtual = nil
+                    end
                 end
             end
         end
