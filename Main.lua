@@ -881,7 +881,7 @@ for i = 1, 3 do
 
     local function update(val)
         local data = Database.Expedition[val]
-        if not data then return end -- proteção
+        if not data then return end
 
         selected[key] = val
         label.Text = val.." | $"..data.Cost.." | "..data.Time
@@ -924,30 +924,27 @@ startBtn.MouseButton1Click:Connect(function()
             local target = selected[key]
             local data = Database.Expedition[target]
 
-            if not data then continue end -- proteção
+            if data then
+                local parts = {}
+                for p in string.gmatch(data.Time, "%d+") do
+                    table.insert(parts, tonumber(p))
+                end
 
-            local parts = {}
-            for p in string.gmatch(data.Time, "%d+") do
-                table.insert(parts, tonumber(p))
+                local seconds = 0
+                if #parts == 2 then
+                    seconds = parts[1]*60 + parts[2]
+                elseif #parts == 3 then
+                    seconds = parts[1]*3600 + parts[2]*60 + parts[3]
+                end
+
+                if seconds > 0 then
+                    marine.Target = target
+                    marine.Active = true
+                    marine.EndTime = tick() + seconds
+                else
+                    warn("Tempo inválido para:", target)
+                end
             end
-
-            local seconds = 0
-            if #parts == 2 then
-                seconds = parts[1]*60 + parts[2]
-            elseif #parts == 3 then
-                seconds = parts[1]*3600 + parts[2]*60 + parts[3]
-            end
-
-            if seconds <= 0 then
-                warn("Tempo inválido para:", target)
-                continue
-            end
-
-            marine.Target = target
-            marine.Active = true
-            marine.EndTime = tick() + seconds
-
-            -- FUTURO: Remote aqui
         end
     end
 end)
@@ -972,7 +969,7 @@ AddDoubleButtons(expeditionCard,
 -- ==========================================
 
 task.spawn(function()
-    while expeditionCard and expeditionCard.Parent do
+    while expeditionCard and expeditionCard.Parent ~= nil do
         for i = 1, 3 do
             local marine = State.ExpeditionManager["Marine "..i]
 
