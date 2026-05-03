@@ -924,6 +924,10 @@ Instance.new("UICorner", configBtn)
 configBtn.MouseButton1Click:Connect(function()
     isOpen = not isOpen
     expeditionConfig.Visible = isOpen
+-- 🔥 ADICIONE ESTA LINHA AQUI:
+    if isOpen then
+        HighlightCard(expeditionConfig.Parent) -- Aplica o efeito no Card Pai do Config
+    end
 end)
 
 -- BOTÃO ENVIAR
