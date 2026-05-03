@@ -863,7 +863,7 @@ for i = 1, 3 do
     container.BackgroundTransparency = 1
 
     local box = Instance.new("TextBox", container)
-    box.Size = UDim2.new(1,0,0,25)
+    box.Size = UDim2.new(1,0,0,30)
     box.PlaceholderText = "Buscar deck..."
     box.Text = ""
     box.BackgroundColor3 = Color3.fromRGB(50,50,55)
@@ -873,8 +873,8 @@ for i = 1, 3 do
     Instance.new("UICorner", box)
 
     local label = Instance.new("TextLabel", container)
-    label.Size = UDim2.new(1,0,0,14)
-    label.Position = UDim2.new(0,0,0,22)
+    label.Size = UDim2.new(1,0,0,16)
+    label.Position = UDim2.new(0,0,0,20)
     label.BackgroundTransparency = 1
     label.TextColor3 = Color3.new(1,1,1)
     label.Font = Enum.Font.GothamBold
