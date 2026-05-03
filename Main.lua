@@ -24,11 +24,12 @@ _G.HubState = _G.HubState or {
     RaidAFK = { Active = false, Decks = {} },
     Trial = { Active = false, Loop = false, Difficulty = "Easy", CardName = "", Counter = 0, Processing = false },
     StarTrialLogic = { UnitName = "" },
+    TrialFast = { Target = "Luffy", Active = false },
     ExpeditionManager = {
     ["Marine 1"] = { Target = "Pirate", Active = false },
     ["Marine 2"] = { Target = "Pirate", Active = false },
     ["Marine 3"] = { Target = "Pirate", Active = false },
-    },
+    }
 }
 local State = _G.HubState
 
@@ -784,6 +785,15 @@ local starUpCard = CreateCard("Trial", "UP STAR")
 AddTextBox(starUpCard, "Personagem", State.StarTrialLogic, "UnitName", 1, 35)
 
 AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
+
+-- 3. CARD TRIAL FAST
+local fastTrialCard = CreateCard("Trial", "TRIAL FAST")
+
+-- Input para o nome do personagem (Salva em State.TrialFast.Target)
+AddTextBox(fastTrialCard, "Personagem", State.TrialFast, "Target", 1, 35)
+
+-- Botão de Ativação (Chama o Trial_Fast.lua)
+AddToggle(fastTrialCard, "ATIVAR FAST", State.TrialFast, "Active", "Trial_Fast.lua", 2, 35)
 
 -- ==========================================
 -- 🌀 ABA: TRIAL / EXPEDITION
