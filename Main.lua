@@ -793,7 +793,7 @@ local fastTrialCard = CreateCard("Trial", "TRIAL FAST")
 AddTextBox(fastTrialCard, "Personagem", State.TrialFast, "Target", 1, 35)
 
 -- Dropdown de Dificuldade (Puxando da Database)
-AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2, 35)
+AddDropdown(fastTrialCard, Database.TrialDifficulties, State.TrialFast, "Difficulty", 2, 35)
 
 -- Botão de Ativação (Chama o Trial_Fast.lua)
 AddToggle(fastTrialCard, "ATIVAR FAST", State.TrialFast, "Active", "Trial_Fast.lua", 3, 35)
