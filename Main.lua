@@ -882,7 +882,8 @@ AddTimedButton(fastTrialCard, "ATIVAR FAST", "Trial_Fast.lua", 3, 35)
 local expeditionCard = CreateCard("Trial", "EXPEDITION")
 
 local labels = {}
-local COR_AZUL = "#00aaff" -- Cor azul ciano para destaque
+local AZUL_TEXTO = "#00aaff" -- Usado apenas dentro das aspas do Rich Text
+local AZUL_OBJETO = Color3.fromHex("#00aaff") -- Usado para propriedades .Color3
 
 for i = 1, 3 do
     local lbl = Instance.new("TextLabel", expeditionCard)
@@ -941,7 +942,7 @@ for i = 1, 3 do
         if not data then return end
 
         selected[key] = val
-        label.Text = string.format("<font color='%s'>%s | $%s | %s</font>", COR_AZUL, val, data.Cost, data.Time)
+        label.Text = string.format("<font color='%s'>%s | $%s | %s</font>", AZUL_TEXTO, val, data.Cost, data.Time)
     end
 
        -- NÃO define padrão automático
@@ -1072,15 +1073,15 @@ task.spawn(function()
                 local m = math.floor((remaining % 3600) / 60)
                 local s = math.floor(remaining % 60)
 
+                -- Aplicando o azul apenas no tempo
                 labels[i].Text = string.format(
                     "Marine %d: <font color='%s'>%02d:%02d:%02d</font>",
-                    i, COR_AZUL, h, m, s
+                    i, AZUL_TEXTO, h, m, s
                 )
             else
                 labels[i].Text = "Marine "..i..": Idle"
             end
         end
-
         task.wait(1)
     end
 end)
