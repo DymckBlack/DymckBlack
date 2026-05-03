@@ -852,40 +852,38 @@ expChild.Parent.Visible = false -- Começa fechado
 
 -- 2. Função de Atualização (Melhorada)
 local function RefreshMarineChild()
-    -- Use o caminho absoluto para não ter erro de nil
-    local manager = _G.HubState.ExpeditionManager
-    local selected = manager.SelectedNPC
-    local data = manager[selected]
-    
-    -- O resto da função continua igual...
+    local selected = State.ExpeditionManager.SelectedNPC or "Marine 1"
+    local data = State.ExpeditionManager[selected]
+
+    if not data then
+        warn("NPC inválido:", selected)
+        return
+    end
     
     -- Limpa o card filho (exceto o layout)
     for _, child in pairs(expChild:GetChildren()) do
-        if not child:IsA("UIListLayout") then child:Destroy() end
+        if not child:IsA("UIListLayout") then 
+            child:Destroy() 
+        end
     end
     
     expChild.Parent.Visible = true
-    -- Acessa o Label de título do card (que é o pai do container expChild)
-    local titleLabel = expChild.Parent:FindFirstChildOfClass("TextLabel")
-    if titleLabel then titleLabel.Text = selected end
     
-    -- Adiciona a busca com Custo/Tempo
+    local titleLabel = expChild.Parent:FindFirstChildOfClass("TextLabel")
+    if titleLabel then 
+        titleLabel.Text = selected 
+    end
+    
     AddExpeditionSearch(expChild, Database.Decks, data, "Target", 1)
     
-    -- Botão Iniciar/Parar
     AddToggle(expChild, "STATUS: " .. selected, data, "Active", "Expedition.lua", 2, 35)
 
-    HighlightCard(expChild.Parent)
+    task.defer(function()
+        if expChild.Parent.Visible then
+            HighlightCard(expChild.Parent)
+        end
+    end)
 end
-
--- 3. Dropdown no Card Pai (AGORA USANDO CALLBACK)
-local marineList = {"Marine 1", "Marine 2", "Marine 3"}
-
--- Note que passei 'RefreshMarineChild' como o último argumento abaixo:
--- Mude de State.ExpeditionManager para _G.HubState.ExpeditionManager
-AddDropdown(expParent, marineList, _G.HubState.ExpeditionManager, "SelectedNPC", 1, 35, RefreshMarineChild)
-
-RefreshMarineChild()
 
 -- ==========================================
 -- 📑 TABS
