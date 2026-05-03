@@ -24,7 +24,7 @@ _G.HubState = _G.HubState or {
     RaidAFK = { Active = false, Decks = {} },
     Trial = { Active = false, Loop = false, Difficulty = "Easy", CardName = "", Counter = 0, Processing = false },
     StarTrialLogic = { UnitName = "" },
-    TrialFast = { Target = "Luffy", Active = false },
+    TrialFast = { Target = "Luffy", Difficulty = "Easy", Active = false },
     ExpeditionManager = {
     ["Marine 1"] = { Target = "Pirate", Active = false },
     ["Marine 2"] = { Target = "Pirate", Active = false },
