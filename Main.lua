@@ -796,7 +796,7 @@ AddTextBox(fastTrialCard, "Personagem", State.TrialFast, "Target", 1, 35)
 AddDropdown(fastTrialCard, Database.TrialDifficulties, State.TrialFast, "Difficulty", 2, 35)
 
 -- Botão de Ativação (Chama o Trial_Fast.lua)
-AddTimedButton(fastTrialCard, "ATIVAR FAST", State.TrialFast, "Active", "Trial_Fast.lua", 3, 35)
+AddTimedButton(fastTrialCard, "ATIVAR FAST", "Trial_Fast.lua", 3, 35)
 
 -- ==========================================
 -- 🌀 ABA: TRIAL / EXPEDITION
