@@ -791,10 +791,10 @@ end
 local trialCard = CreateCard("Trial", "TRIAL")
 
 -- Input para o nome da Unidade
-AddTextBox(trialCard, "Personagem", State.Trial, "CardName", 1, 27)
+AddTextBox(trialCard, "Personagem", State.Trial, "CardName", 1, 29)
 
 -- Dropdown de Dificuldade (Puxando da Database)
-AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2, 27)
+AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2, 25)
 
 -- BOTÃO DE CLIQUE ÚNICO (Usando sua função!)
 -- Ele vai carregar o "Trial.lua" e dar o Start ao mesmo tempo
