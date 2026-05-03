@@ -999,7 +999,7 @@ Instance.new("UICorner", sendBtn)
 
 sendBtn.MouseButton1Click:Connect(function()
     LoadScript("Expedition.lua")
-    print("🟡 [EXPEDITION] Botão ENVIAR clicado")
+    --print("🟡 [EXPEDITION] Botão ENVIAR clicado")
 
     for i = 1, 3 do
         local key = "Marine "..i
@@ -1007,7 +1007,7 @@ sendBtn.MouseButton1Click:Connect(function()
 
         -- 🚫 já está ativo
         if marine.Active then
-            warn("⛔ Já ativo:", key)
+            --warn("⛔ Já ativo:", key)
             continue
         end
 
@@ -1015,7 +1015,7 @@ sendBtn.MouseButton1Click:Connect(function()
 
         -- 🚫 sem target
         if not target or target == "" then
-            warn("❌ Nenhum target selecionado:", key)
+            --warn("❌ Nenhum target selecionado:", key)
             continue
         end
 
@@ -1023,7 +1023,7 @@ sendBtn.MouseButton1Click:Connect(function()
 
         -- 🚫 target inválido
         if not data then
-            warn("❌ Target inválido:", key, target)
+            --warn("❌ Target inválido:", key, target)
             continue
         end
 
@@ -1043,7 +1043,7 @@ sendBtn.MouseButton1Click:Connect(function()
 
         -- 🚫 tempo inválido
         if seconds <= 0 then
-            warn("❌ Tempo inválido:", key, target)
+            --warn("❌ Tempo inválido:", key, target)
             continue
         end
 
@@ -1053,7 +1053,7 @@ sendBtn.MouseButton1Click:Connect(function()
         marine.EndTime = tick() + seconds
         marine.Sent = false -- 🔥 ESSENCIAL PRO MOTOR
 
-        print("✅ [EXPEDITION] Ativado:", key, "| Target:", target, "| Tempo:", seconds.."s")
+        --print("✅ [EXPEDITION] Ativado:", key, "| Target:", target, "| Tempo:", seconds.."s")
     end
 end)
 
