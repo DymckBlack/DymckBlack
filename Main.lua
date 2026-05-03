@@ -839,8 +839,6 @@ AddTextBox(starUpCard, "Personagem", State.StarTrialLogic, "UnitName", 1, 35)
 
 AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
 
--- 3. CARD PAI (O Seletor)
-
 -- ==========================================
 -- 🌀 ABA: TRIAL / EXPEDITION
 -- ==========================================
@@ -848,9 +846,11 @@ AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
 -- 1. CARD PAI (O Seletor)
 local expParent = CreateCard("Trial", "EXPEDIÇÃO")
 local expChild = CreateCard("Trial", "CONFIG MARINE")
-expChild.Parent.Visible = false -- Começa fechado
 
--- 2. Função de Atualização (Melhorada)
+-- Começa fechado (CORRETO: mexe no CARD real)
+expChild.Parent.Visible = false
+
+-- 2. Função de Atualização
 local function RefreshMarineChild()
     local selected = State.ExpeditionManager.SelectedNPC or "Marine 1"
     local data = State.ExpeditionManager[selected]
@@ -860,25 +860,36 @@ local function RefreshMarineChild()
         return
     end
     
-    -- Limpa o card filho (exceto o layout)
+    -- 🔥 LIMPA CORRETAMENTE (mantém layout intacto)
     for _, child in pairs(expChild:GetChildren()) do
-        if not child:IsA("UIListLayout") then 
-            child:Destroy() 
+        if not child:IsA("UIListLayout") then
+            child:Destroy()
         end
     end
     
+    -- 🔥 MOSTRA O CARD
     expChild.Parent.Visible = true
     
+    -- 🔥 ATUALIZA TÍTULO
     local titleLabel = expChild.Parent:FindFirstChildOfClass("TextLabel")
     if titleLabel then 
         titleLabel.Text = selected 
     end
     
+    -- 🔥 RECRIA CONTEÚDO
     AddExpeditionSearch(expChild, Database.Decks, data, "Target", 1)
-    
     AddToggle(expChild, "STATUS: " .. selected, data, "Active", "Expedition.lua", 2, 35)
 
+    -- 🔥 FORÇA ATUALIZAÇÃO DO GRID (ESSENCIAL)
     task.defer(function()
+        if expChild.Parent and expChild.Parent.Parent then
+            local grid = expChild.Parent.Parent:FindFirstChildOfClass("UIGridLayout")
+            if grid then
+                grid:ApplyLayout()
+            end
+        end
+
+        -- ✨ Highlight bonitinho
         if expChild.Parent.Visible then
             HighlightCard(expChild.Parent)
         end
