@@ -847,6 +847,7 @@ end
 
 local expeditionConfig = CreateCard("Trial", "EXP CONFIG")
 expeditionConfig.Visible = false
+expeditionConfig:FindFirstChildOfClass("UIListLayout").Padding = UDim.new(0, 2)
 
 local selected = {
     ["Marine 1"] = "Pirate",
@@ -858,7 +859,7 @@ for i = 1, 3 do
     local key = "Marine "..i
 
     local container = Instance.new("Frame", expeditionConfig)
-    container.Size = UDim2.new(1,0,0,45)
+    container.Size = UDim2.new(1,0,0,38)
     container.BackgroundTransparency = 1
 
     local box = Instance.new("TextBox", container)
@@ -872,8 +873,8 @@ for i = 1, 3 do
     Instance.new("UICorner", box)
 
     local label = Instance.new("TextLabel", container)
-    label.Size = UDim2.new(1,0,0,16)
-    label.Position = UDim2.new(0,0,0,24)
+    label.Size = UDim2.new(1,0,0,14)
+    label.Position = UDim2.new(0,0,0,22)
     label.BackgroundTransparency = 1
     label.TextColor3 = Color3.new(1,1,1)
     label.Font = Enum.Font.GothamBold
@@ -956,8 +957,8 @@ end)
 local isOpen = false
 
 AddDoubleButtons(expeditionCard,
-    "CONFIG", nil,
-    "ABRIR", function()
+    "ENVIAR", nil,
+    "CONFIG", function()
         isOpen = not isOpen
         expeditionConfig.Visible = isOpen
     end,
