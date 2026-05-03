@@ -792,8 +792,11 @@ local fastTrialCard = CreateCard("Trial", "TRIAL FAST")
 -- Input para o nome do personagem (Salva em State.TrialFast.Target)
 AddTextBox(fastTrialCard, "Personagem", State.TrialFast, "Target", 1, 35)
 
+-- Dropdown de Dificuldade (Puxando da Database)
+AddDropdown(trialCard, Database.TrialDifficulties, State.Trial, "Difficulty", 2, 35)
+
 -- Botão de Ativação (Chama o Trial_Fast.lua)
-AddToggle(fastTrialCard, "ATIVAR FAST", State.TrialFast, "Active", "Trial_Fast.lua", 2, 35)
+AddToggle(fastTrialCard, "ATIVAR FAST", State.TrialFast, "Active", "Trial_Fast.lua", 3, 35)
 
 -- ==========================================
 -- 🌀 ABA: TRIAL / EXPEDITION
