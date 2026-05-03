@@ -1,14 +1,14 @@
---// SERVICES
+-- [[ DYMCKHUB - TRIAL FAST ]]
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("StarTrial")
 local player = Players.LocalPlayer
 
 -- Pega os dados do estado global
-local State = _G.HubState.TrialFast
+local State = _G.HubState and _G.HubState.TrialFast
 
--- Proteção Anti-Multiplicação
-if _G.TrialFastRunning then return end
+-- Proteção Anti-Multiplicação (Thread Única)
+if _G.TrialFastRunning or not State then return end
 
 --------------------------------------------------
 -- CONFIGURAÇÃO DE POSIÇÕES
@@ -36,12 +36,17 @@ local function iniciarTrial()
     local personagem = (State.Target and State.Target ~= "") and State.Target or "Luffy"
     local diff = State.Difficulty or "Easy"
     
-    print("[TRIAL FAST] Solicitando entrada...")
-    remote:FireServer("Start", diff, personagem)
+    -- Solicitação de entrada via pcall para evitar erros críticos
+    pcall(function()
+        remote:FireServer("Start", diff, personagem)
+    end)
     
     -- Espera até 10 segundos para detectar que entrou na sala
     local entrou = false
     for i = 1, 20 do
+        -- Segurança: Se o HubState sumir, cancela tudo
+        if not _G.HubState then break end
+        
         if getDistance(POS_DENTRO) < DISTANCIA_TOLERANCIA then
             entrou = true
             break
@@ -50,41 +55,44 @@ local function iniciarTrial()
     end
 
     if not entrou then
-        print("[TRIAL FAST] Falha ao detectar entrada. Cancelando.")
         _G.TrialFastRunning = nil
         return
     end
 
-    print("[TRIAL FAST] Dentro da Trial! Iniciando ataques...")
-
     local SALAS = { {1,2}, {1,2,3}, {1,2,3}, {1,2,3,4}, {1} }
 
     for _, sala in ipairs(SALAS) do
-        -- VERIFICAÇÃO DE SEGURANÇA: Se saiu da trial no meio do processo
-        if getDistance(POS_FORA) < DISTANCIA_TOLERANCIA then break end
+        -- Verificações de interrupção (Saída do player ou fechamento do Hub)
+        if not _G.HubState or getDistance(POS_FORA) < DISTANCIA_TOLERANCIA then 
+            break 
+        end
 
         for _, challenger in ipairs(sala) do
-            -- Se o player foi expulso ou a trial acabou antes
-            if getDistance(POS_FORA) < DISTANCIA_TOLERANCIA then break end
+            if not _G.HubState or getDistance(POS_FORA) < DISTANCIA_TOLERANCIA then 
+                break 
+            end
             
-            remote:FireServer("Challenge", tostring(challenger))
-            task.wait(0.5)
-            remote:FireServer("AttackDone", tostring(challenger))
+            pcall(function()
+                remote:FireServer("Challenge", tostring(challenger))
+                task.wait(0.5)
+                remote:FireServer("AttackDone", tostring(challenger))
+            end)
             task.wait(2)
         end
     end
-
-    print("[TRIAL FAST] Finalizado. Aguardando saída para limpar trava...")
     
-    -- Observador suave: Espera detectar que você está no Lobby para liberar o script de novo
+    -- Observador de saída: Espera detectar que você está no Lobby para liberar a trava
     while getDistance(POS_FORA) > DISTANCIA_TOLERANCIA do
+        if not _G.HubState then break end -- Se o Hub fechar, limpa a trava imediatamente
         task.wait(2)
     end
 
-    print("[TRIAL FAST] Player detectado no Lobby. Pronto para a próxima!")
+    -- Reset Final
     _G.TrialFastRunning = nil
-    State.Active = false
+    if _G.HubState and _G.HubState.TrialFast then
+        State.Active = false
+    end
 end
 
--- Inicia o processo
-iniciarTrial()
+-- Inicia o processo em uma nova thread para não travar o Hub
+task.spawn(iniciarTrial)
