@@ -888,7 +888,10 @@ for i = 1, 3 do
         label.Text = val.." | $"..data.Cost.." | "..data.Time
     end
 
-    update("Pirate")
+       -- NÃO define padrão automático
+       -- deixa vazio até o cara escolher
+       label.Text = "Nenhum selecionado"
+       selected[key] = nil
 
     box:GetPropertyChangedSignal("Text"):Connect(function()
         local query = box.Text:lower()
