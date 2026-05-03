@@ -845,7 +845,7 @@ end
 -- ⚙️ CARD EXPEDITION CONFIG (FILHO)
 -- ==========================================
 
-local expeditionConfig = CreateCard("Trial", "EXP CONFIG")
+local expeditionConfig = CreateCard("Trial", "SETTINGS")
 expeditionConfig.Visible = false
 expeditionConfig:FindFirstChildOfClass("UIListLayout").Padding = UDim.new(0, 2)
 
@@ -863,7 +863,7 @@ for i = 1, 3 do
     container.BackgroundTransparency = 1
 
     local box = Instance.new("TextBox", container)
-    box.Size = UDim2.new(1,0,0,20)
+    box.Size = UDim2.new(1,0,0,25)
     box.PlaceholderText = "Buscar deck..."
     box.Text = ""
     box.BackgroundColor3 = Color3.fromRGB(50,50,55)
