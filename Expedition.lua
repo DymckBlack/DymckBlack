@@ -1,74 +1,144 @@
 -- ==========================================
--- 🌀 SCRIPT: EXPEDITION.LUA (ANTI-MULTIPLICAÇÃO)
+-- 🚢 EXPEDITION SYSTEM
 -- ==========================================
-local Remote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("StarTrial")
-local State = _G.HubState.ExpeditionManager
-local DB = _G.HubDatabase.Expedition
 
--- 🛡️ TRAVA GLOBAL: Garante que só exista um loop por Marine
-_G.ExpeditionRunning = _G.ExpeditionRunning or {
-    ["Marine 1"] = false,
-    ["Marine 2"] = false,
-    ["Marine 3"] = false
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("StarTrial")
+
+local State = _G.HubState
+if not State then
+    warn("❌ HubState não encontrado!")
+    return
+end
+
+-- ==========================================
+-- 🔐 CONTROLE ANTI DUPLICAÇÃO
+-- ==========================================
+
+_G.ExpeditionSending = _G.ExpeditionSending or {}
+
+-- ==========================================
+-- 📦 CONFIG LOCAL
+-- ==========================================
+
+local ExpeditionNPC = {
+    ["Marine 1"] = "1",
+    ["Marine 2"] = "2",
+    ["Marine 3"] = "3"
 }
 
--- Função para converter formato "HH:MM:SS" ou "HH:MM" para segundos
-local function TimeToSeconds(timeStr)
-    local h, m, s = 0, 0, 0
-    local parts = string.split(timeStr, ":")
-    if #parts == 3 then
-        h, m, s = tonumber(parts[1]), tonumber(parts[2]), tonumber(parts[3])
-    elseif #parts == 2 then
-        h, m = tonumber(parts[1]), tonumber(parts[2])
+-- ==========================================
+-- 🚀 ENVIAR EXPEDIÇÃO
+-- ==========================================
+
+local function SendExpedition(marineName, marineData)
+    if _G.ExpeditionSending[marineName] then
+        warn("⛔ Já enviando:", marineName)
+        return
     end
-    return (h * 3600) + (m * 60) + s
-end
 
--- Função que gerencia o ciclo de vida de cada Marine
-local function ManageMarine(marineName)
-    -- Se já estiver rodando este Marine, cancela a nova tentativa
-    if _G.ExpeditionRunning[marineName] then return end
-    
-    _G.ExpeditionRunning[marineName] = true
-    local marineID = marineName:match("%d+") 
-    
-    print("🚀 Gerenciador iniciado para: " .. marineName)
+    _G.ExpeditionSending[marineName] = true
 
-    while State[marineName].Active do
-        local target = State[marineName].Target
-        local data = DB[target]
-        
-        if not data then break end
+    local npcId = ExpeditionNPC[marineName]
+    local target = marineData.Target
 
-        -- 1. ENVIAR
-        Remote:FireServer("SendExpedition", {
-            ["NPC"] = marineID,
+    if not npcId or not target then
+        warn("❌ Dados inválidos:", marineName, npcId, target)
+        _G.ExpeditionSending[marineName] = nil
+        return
+    end
+
+    print("🚀 Enviando Expedition:", marineName, "| NPC:", npcId, "| Target:", target)
+
+    local args = {
+        [1] = "SendExpedition",
+        [2] = {
+            ["NPC"] = npcId,
             ["Reward"] = target .. "-Rainbow",
             ["Category"] = "Pack"
-        })
+        }
+    }
 
-        -- 2. ESPERAR
-        local waitTime = TimeToSeconds(data.Time)
-        task.wait(waitTime)
+    local success, err = pcall(function()
+        Remote:FireServer(unpack(args))
+    end)
 
-        -- 3. DELAY SEGURANÇA
-        task.wait(3)
-
-        -- 4. COLETAR
-        Remote:FireServer("ClaimExpedition", marineID)
-
-        task.wait(2) 
+    if success then
+        print("✅ Enviado com sucesso:", marineName)
+    else
+        warn("❌ Erro ao enviar:", marineName, err)
     end
 
-    -- Ao sair do loop (quando desativado no menu), libera a trava
-    _G.ExpeditionRunning[marineName] = false
-    print("🛑 Gerenciador encerrado para: " .. marineName)
+    task.wait(0.5) -- proteção leve contra spam
+    _G.ExpeditionSending[marineName] = nil
 end
 
--- Inicia o gerenciamento para os 3 Marines
-for i = 1, 3 do
-    local mName = "Marine " .. i
+-- ==========================================
+-- 🎁 CLAIM EXPEDIÇÃO
+-- ==========================================
+
+local function ClaimExpedition(marineName)
+    local npcId = ExpeditionNPC[marineName]
+
+    if not npcId then
+        warn("❌ NPC inválido para claim:", marineName)
+        return
+    end
+
+    print("🎁 Claimando:", marineName, "| NPC:", npcId)
+
+    local args = {
+        [1] = "ClaimExpedition",
+        [2] = npcId
+    }
+
+    local success, err = pcall(function()
+        Remote:FireServer(unpack(args))
+    end)
+
+    if success then
+        print("✅ Claim enviado:", marineName)
+    else
+        warn("❌ Erro no claim:", marineName, err)
+    end
+end
+
+-- ==========================================
+-- 🔁 LOOP PRINCIPAL
+-- ==========================================
+
+if not _G.ExpeditionRunner then
+    _G.ExpeditionRunner = true
+
     task.spawn(function()
-        ManageMarine(mName)
+        print("🟢 Expedition.lua iniciado")
+
+        while true do
+            for marineName, marine in pairs(State.ExpeditionManager) do
+
+                -- ==========================================
+                -- 🚀 ENVIO (quando acabou de iniciar)
+                -- ==========================================
+                if marine.Active and not marine.Sent then
+                    SendExpedition(marineName, marine)
+                    marine.Sent = true
+                end
+
+                -- ==========================================
+                -- 🎁 CLAIM (quando terminou)
+                -- ==========================================
+                if not marine.Active and marine.Sent then
+                    ClaimExpedition(marineName)
+
+                    -- reset completo
+                    marine.Sent = false
+                    marine.Target = "Pirate"
+
+                    print("♻ Resetando:", marineName)
+                end
+            end
+
+            task.wait(1)
+        end
     end)
 end
