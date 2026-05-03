@@ -874,7 +874,7 @@ for i = 1, 3 do
 
     local label = Instance.new("TextLabel", container)
     label.Size = UDim2.new(1,0,0,16)
-    label.Position = UDim2.new(0,0,0,22)
+    label.Position = UDim2.new(0,0,0,25)
     label.BackgroundTransparency = 1
     label.TextColor3 = Color3.new(1,1,1)
     label.Font = Enum.Font.GothamBold
