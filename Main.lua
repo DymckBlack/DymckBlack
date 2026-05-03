@@ -903,20 +903,37 @@ for i = 1, 3 do
 end
 
 -- ==========================================
--- ▶ BOTÃO INICIAR (INTELIGENTE)
+-- 🔘 BOTÕES (VERTICAL)
 -- ==========================================
 
-local startBtn = Instance.new("TextButton", expeditionConfig)
-startBtn.Size = UDim2.new(1,0,0,30)
-startBtn.Text = "INICIAR EXPEDIÇÃO"
-startBtn.BackgroundColor3 = COR_VERMELHO
-startBtn.TextColor3 = Color3.new(1,1,1)
-startBtn.Font = Enum.Font.GothamBold
-startBtn.TextSize = 10
-Instance.new("UICorner", startBtn)
+local isOpen = false
 
-startBtn.MouseButton1Click:Connect(function()
+-- BOTÃO CONFIG
+local configBtn = Instance.new("TextButton", expeditionCard)
+configBtn.Size = UDim2.new(1,0,0,25)
+configBtn.Text = "CONFIG"
+configBtn.BackgroundColor3 = Color3.fromRGB(40,40,45)
+configBtn.TextColor3 = Color3.new(1,1,1)
+configBtn.Font = Enum.Font.GothamBold
+configBtn.TextSize = 10
+Instance.new("UICorner", configBtn)
 
+configBtn.MouseButton1Click:Connect(function()
+    isOpen = not isOpen
+    expeditionConfig.Visible = isOpen
+end)
+
+-- BOTÃO ENVIAR
+local sendBtn = Instance.new("TextButton", expeditionCard)
+sendBtn.Size = UDim2.new(1,0,0,25)
+sendBtn.Text = "ENVIAR"
+sendBtn.BackgroundColor3 = COR_VERMELHO
+sendBtn.TextColor3 = Color3.new(1,1,1)
+sendBtn.Font = Enum.Font.GothamBold
+sendBtn.TextSize = 10
+Instance.new("UICorner", sendBtn)
+
+sendBtn.MouseButton1Click:Connect(function()
     for i = 1, 3 do
         local key = "Marine "..i
         local marine = State.ExpeditionManager[key]
@@ -942,6 +959,8 @@ startBtn.MouseButton1Click:Connect(function()
                     marine.Target = target
                     marine.Active = true
                     marine.EndTime = tick() + seconds
+
+                    print("[EXPEDITION] Enviado:", key, target, seconds.."s")
                 else
                     warn("Tempo inválido para:", target)
                 end
@@ -951,26 +970,11 @@ startBtn.MouseButton1Click:Connect(function()
 end)
 
 -- ==========================================
--- 🔘 BOTÃO ABRIR / FECHAR CONFIG
--- ==========================================
-
-local isOpen = false
-
-AddDoubleButtons(expeditionCard,
-    "ENVIAR", nil,
-    "CONFIG", function()
-        isOpen = not isOpen
-        expeditionConfig.Visible = isOpen
-    end,
-    4, 25
-)
-
--- ==========================================
 -- 🔄 LOOP VISUAL DO CARD PAI
 -- ==========================================
 
 task.spawn(function()
-    while expeditionCard and expeditionCard.Parent ~= nil do
+    while expeditionCard and expeditionCard.Parent do
         for i = 1, 3 do
             local marine = State.ExpeditionManager["Marine "..i]
 
