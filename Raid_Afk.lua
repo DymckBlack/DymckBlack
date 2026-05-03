@@ -1,15 +1,22 @@
--- [[ GEMINI MASTER HUB - MOTOR DE INVASÃO AFK ]]
+-- [[ DYMCK HUB - MOTOR DE INVASÃO AFK ]]
+
+-- 1. 🛡️ TRAVA DE SEGURANÇA GLOBAL
+if _G.RaidMotorRunning then 
+    return 
+end
+_G.RaidMotorRunning = true
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TextChatService = game:GetService("TextChatService")
 
--- 1. Puxa os dados globais (Main e Motor agora usam a MESMA lista)
+-- Puxa os dados globais
 local State = _G.HubState and _G.HubState.RaidAFK
-local Database = _G.HubDatabase -- ⬅️ Puxando a sua tabela Database do Main
+local Database = _G.HubDatabase
 
--- Validação de Segurança: Se o Main não foi carregado, o motor espera
+-- Validação silenciosa
 if not State or not Database then
-    warn("GeminiHUB [Aviso]: Aguardando inicialização do HubDatabase...")
+    _G.RaidMotorRunning = false -- Libera a trava caso falte a database para tentar carregar depois
     return
 end
 
@@ -40,7 +47,6 @@ local function EntrarNaRaid(raidNome)
                     [3] = (data.char3 ~= "") and data.char3 or "Empty"
                 })
             end)
-            print("GeminiHUB: Auto-Join para " .. raidNome)
         end
     end
 end
@@ -49,7 +55,7 @@ local function OnRaidMessageFound(fullText)
     local lowMsg = fullText:lower()
     
     if string.find(lowMsg, "raid is starting now") then
-        -- 🧠 A MÁGICA AQUI: Ele percorre a sua Database.Decks original do Main
+        -- Percorre a Database original
         for _, nome in pairs(Database.Decks) do
             if string.find(lowMsg, nome:lower()) then
                 EntrarNaRaid(nome)
@@ -60,15 +66,17 @@ local function OnRaidMessageFound(fullText)
 end
 
 -- ==========================================
--- MONITORES DE CHAT
+-- MONITORES DE CHAT (CONEXÕES ÚNICAS)
 -- ==========================================
 
+-- 1. Monitor moderno
 if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
     TextChatService.MessageReceived:Connect(function(m)
         if m.Text then OnRaidMessageFound(m.Text) end
     end)
 end
 
+-- 2. Monitor legado (Backup)
 task.spawn(function()
     local lp = Players.LocalPlayer
     local chatScroller = lp:WaitForChild("PlayerGui"):FindFirstChild("Scroller", true)
@@ -80,6 +88,13 @@ task.spawn(function()
             if label then OnRaidMessageFound(label.Text) end
         end)
     end
+    
+    -- Loop de segurança para resetar trava se o HubState sumir
+    while true do
+        if not _G.HubState then
+            _G.RaidMotorRunning = false
+            break
+        end
+        task.wait(2)
+    end
 end)
-
-print("GeminiHUB: Motor AFK sincronizado com a Database principal!")
