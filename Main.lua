@@ -839,8 +839,6 @@ AddTextBox(starUpCard, "Personagem", State.StarTrialLogic, "UnitName", 1, 35)
 
 AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
 
--- 3. CARD PAI (O Seletor)
-
 -- ==========================================
 -- 🌀 ABA: TRIAL / EXPEDITION
 -- ==========================================
@@ -848,39 +846,73 @@ AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
 -- 1. CARD PAI (O Seletor)
 local expParent = CreateCard("Trial", "EXPEDIÇÃO")
 local expChild = CreateCard("Trial", "CONFIG MARINE")
-expChild.Parent.Visible = false -- Começa fechado
 
--- 2. Função de Atualização (Melhorada)
-local function RefreshMarineChild()
-    local selected = State.ExpeditionManager.SelectedNPC
+-- Começa fechado (CORRETO: mexe no CARD real)
+expChild.Parent.Visible = false
+
+-- 🔥 DROPDOWN DO CARD PAI (ESSENCIAL)
+AddDropdown(
+    expParent,
+    {"Marine 1", "Marine 2", "Marine 3"},
+    State.ExpeditionManager,
+    "SelectedNPC",
+    1,
+    35,
+    function()
+        RefreshMarineChild()
+    end
+)
+
+-- 2. Função de Atualização
+function RefreshMarineChild()
+    local selected = State.ExpeditionManager.SelectedNPC or "Marine 1"
     local data = State.ExpeditionManager[selected]
-    
-    -- Limpa o card filho (exceto o layout)
-    for _, child in pairs(expChild:GetChildren()) do
-        if not child:IsA("UIListLayout") then child:Destroy() end
+
+    if not data then
+        warn("NPC inválido:", selected)
+        return
     end
     
+    -- 🔥 LIMPA CORRETAMENTE (mantém layout intacto)
+    for _, child in pairs(expChild:GetChildren()) do
+        if not child:IsA("UIListLayout") then
+            child:Destroy()
+        end
+    end
+    
+    -- 🔥 MOSTRA O CARD
     expChild.Parent.Visible = true
-    -- Acessa o Label de título do card (que é o pai do container expChild)
+    
+    -- 🔥 ATUALIZA TÍTULO
     local titleLabel = expChild.Parent:FindFirstChildOfClass("TextLabel")
-    if titleLabel then titleLabel.Text = selected end
+    if titleLabel then 
+        titleLabel.Text = selected 
+    end
     
-    -- Adiciona a busca com Custo/Tempo
+    -- 🔥 RECRIA CONTEÚDO
     AddExpeditionSearch(expChild, Database.Decks, data, "Target", 1)
-    
-    -- Botão Iniciar/Parar
     AddToggle(expChild, "STATUS: " .. selected, data, "Active", "Expedition.lua", 2, 35)
 
-    HighlightCard(expChild.Parent)
+    -- 🔥 FORÇA ATUALIZAÇÃO DO GRID (ESSENCIAL)
+    task.defer(function()
+        if expChild.Parent and expChild.Parent.Parent then
+            local grid = expChild.Parent.Parent:FindFirstChildOfClass("UIGridLayout")
+            if grid then
+                grid:ApplyLayout()
+            end
+        end
+
+        -- ✨ Highlight bonitinho
+        if expChild.Parent.Visible then
+            HighlightCard(expChild.Parent)
+        end
+    end)
 end
 
--- 3. Dropdown no Card Pai (AGORA USANDO CALLBACK)
-local marineList = {"Marine 1", "Marine 2", "Marine 3"}
-
--- Note que passei 'RefreshMarineChild' como o último argumento abaixo:
-AddDropdown(expParent, marineList, State.ExpeditionManager, "SelectedNPC", 1, 35, RefreshMarineChild)
-
-RefreshMarineChild()
+-- 🔥 AUTO INICIALIZA (faz já aparecer algo ao abrir)
+task.defer(function()
+    RefreshMarineChild()
+end)
 
 -- ==========================================
 -- 📑 TABS
