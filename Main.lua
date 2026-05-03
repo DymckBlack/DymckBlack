@@ -853,7 +853,13 @@ expChild.Parent.Visible = false -- Começa fechado
 -- 2. Função de Atualização (Melhorada)
 local function RefreshMarineChild()
     local selected = State.ExpeditionManager.SelectedNPC
-    local data = State.ExpeditionManager[selected]
+    local selected = State.ExpeditionManager.SelectedNPC or "Marine 1"
+local data = State.ExpeditionManager[selected]
+
+if not data then
+    warn("NPC inválido:", selected)
+    return
+end
     
     -- Limpa o card filho (exceto o layout)
     for _, child in pairs(expChild:GetChildren()) do
@@ -871,8 +877,11 @@ local function RefreshMarineChild()
     -- Botão Iniciar/Parar
     AddToggle(expChild, "STATUS: " .. selected, data, "Active", "Expedition.lua", 2, 35)
 
-    HighlightCard(expChild.Parent)
-end
+task.defer(function()
+    if expChild.Parent.Visible then
+        HighlightCard(expChild.Parent)
+    end
+end)
 
 -- 3. Dropdown no Card Pai (AGORA USANDO CALLBACK)
 local marineList = {"Marine 1", "Marine 2", "Marine 3"}
