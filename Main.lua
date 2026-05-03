@@ -23,7 +23,13 @@ _G.HubState = _G.HubState or {
     Manga = { Name = "" },
     RaidAFK = { Active = false, Decks = {} },
     Trial = { Active = false, Loop = false, Difficulty = "Easy", CardName = "", Counter = 0, Processing = false },
-    StarTrialLogic = { UnitName = "" }
+    StarTrialLogic = { UnitName = "" },
+    ExpeditionManager = {
+    SelectedNPC = "Marine 1", -- Define qual marine o card filho está editando
+    ["Marine 1"] = { Target = "Pirate", Active = false },
+    ["Marine 2"] = { Target = "Pirate", Active = false },
+    ["Marine 3"] = { Target = "Pirate", Active = false },
+    },
 }
 local State = _G.HubState
 
@@ -70,6 +76,36 @@ local Database = {
     },
     TrialDifficulties = {
     "Easy", "Medium", "Hard", "Extreme", "Nightmare"
+    },
+    Expedition = {
+    ["Pirate"] = {Cost = "14K", Time = "06:00"},
+    ["Ninja"] = {Cost = "91K", Time = "12:00"},
+    ["Soul"] = {Cost = "840K", Time = "18:00"},
+    ["Slayer"] = {Cost = "35M", Time = "24:00"},
+    ["Sorcerer"] = {Cost = "7B", Time = "30:00"},
+    ["Dragon"] = {Cost = "700B", Time = "36:00"},
+    ["Fire"] = {Cost = "7T", Time = "42:00"},
+    ["Hero"] = {Cost = "35T", Time = "48:00"},
+    ["Hunter"] = {Cost = "140T", Time = "54:00"},
+    ["Solo"] = {Cost = "490T", Time = "01:00:00"},
+    ["Titan"] = {Cost = "1.75Q", Time = "01:06:00"},
+    ["Chainsaw"] = {Cost = "6.3Q", Time = "01:12:00"},
+    ["Flight"] = {Cost = "35Q", Time = "01:18:00"},
+    ["Ego"] = {Cost = "420Q", Time = "01:24:00"},
+    ["Clover"] = {Cost = "1.75QN", Time = "01:30:00"},
+    ["Ghoul"] = {Cost = "7QN", Time = "01:36:00"},
+    ["Geass"] = {Cost = "14QN", Time = "01:42:00"},
+    ["Bizarre"] = {Cost = "21QN", Time = "01:48:00"},
+    ["Fairy"] = {Cost = "35QN", Time = "01:54:00"},
+    ["Sins"] = {Cost = "63QN", Time = "02:00:00"},
+    ["Note"] = {Cost = "280QN", Time = "02:06:00"},
+    ["Slime"] = {Cost = "700QN", Time = "02:12:00"},
+    ["Mage"] = {Cost = "2.1S", Time = "02:18:00"},
+    ["Zero"] = {Cost = "7S", Time = "02:24:00"},
+    ["Vagrant"] = {Cost = "17.5S", Time = "02:30:00"},
+    ["Rebellion"] = {Cost = "49S", Time = "02:36:00"},
+    ["Viking"] = {Cost = "98S", Time = "02:42:00"},
+    ["Mercenary"] = {Cost = "175S", Time = "02:48:00"}
     }
 }
 _G.HubDatabase = Database
@@ -288,8 +324,8 @@ local function AddTextBox(parent, placeholder, stateTable, key, order, h)
     end)
 end
 
--- 4. Menu de Escolha (Dropdown)
-local function AddDropdown(parent, list, stateTable, key, order, h)
+-- 4. Menu de Escolha (Dropdown) - ATUALIZADO
+local function AddDropdown(parent, list, stateTable, key, order, h, callback)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
     btn.Size = UDim2.new(1, 0, 0, h or 27)
@@ -309,9 +345,16 @@ local function AddDropdown(parent, list, stateTable, key, order, h)
         local currentPos = table.find(list, stateTable[key]) or 1
         local nextPos = currentPos + 1
         if nextPos > #list then nextPos = 1 end
+        
         stateTable[key] = list[nextPos]
         btn.Text = list[nextPos]
+
+        -- Se você passar uma função no final da chamada, ela executa aqui!
+        if callback then 
+            callback(list[nextPos]) 
+        end
     end)
+    return btn
 end
 
 -- 5. Botão Híbrido (Toggle/Execução)
@@ -600,7 +643,7 @@ local function CreateDeckItem(scroll, layout, name, state)
     return itemFrame
 end
 
--- 11. -- 10. Não sei o que faz certo ainda. Trocar nome.
+-- 11. Não sei o que faz certo ainda. Trocar nome.
 local function CreateDeckList(parent)
     local scroll = Instance.new("ScrollingFrame", parent)
     scroll.Size = UDim2.new(1, 0, 1, 0)
@@ -614,6 +657,59 @@ local function CreateDeckList(parent)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
     return scroll, layout
+end
+
+-- 13. Nova função
+local function AddExpeditionSearch(parent, list, stateTable, key, order)
+    local container = Instance.new("Frame", parent)
+    container.LayoutOrder = order or 0
+    container.Size = UDim2.new(1, 0, 0, 80)
+    container.BackgroundTransparency = 1
+
+    local box = Instance.new("TextBox", container)
+    box.Size = UDim2.new(1, 0, 0, 30)
+    box.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+    box.PlaceholderText = "Buscar Deck (Ex: Ni...)"
+    box.Text = ""
+    box.TextColor3 = Color3.new(1, 1, 1)
+    box.Font = Enum.Font.GothamBold
+    box.TextSize = 10
+    Instance.new("UICorner", box)
+
+    local infoLabel = Instance.new("TextLabel", container)
+    infoLabel.Size = UDim2.new(1, 0, 0, 50)
+    infoLabel.Position = UDim2.new(0, 0, 0, 30)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.RichText = true
+    infoLabel.Font = Enum.Font.Gotham
+    infoLabel.TextSize = 10
+    infoLabel.TextColor3 = Color3.new(1, 1, 1)
+    infoLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    local function updateVisual(val)
+        stateTable[key] = val
+        -- Puxa os dados da sua tabela de custos
+        local stats = State.Expedition[val] or {Cost = "???", Time = "???"}
+        infoLabel.Text = string.format(
+            'Selecionado: <font color="#0078FF">%s</font>\n'..
+            'Custo: <font color="#FFD700">%s</font>\n'..
+            'Tempo: <font color="#FF4B4B">%s</font>',
+            val, stats.Cost, stats.Time
+        )
+    end
+
+    updateVisual(stateTable[key] or "Pirate")
+
+    box:GetPropertyChangedSignal("Text"):Connect(function()
+        local query = box.Text:lower()
+        if query == "" then return end
+        for _, item in pairs(list) do
+            if item:lower():find(query) == 1 then
+                updateVisual(item)
+                break
+            end
+        end
+    end)
 end
 
 -- ==========================================
@@ -742,6 +838,49 @@ local starUpCard = CreateCard("Trial", "UP STAR")
 AddTextBox(starUpCard, "Personagem", State.StarTrialLogic, "UnitName", 1, 35)
 
 AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
+
+-- 3. CARD PAI (O Seletor)
+
+-- ==========================================
+-- 🌀 ABA: TRIAL / EXPEDITION
+-- ==========================================
+
+-- 1. CARD PAI (O Seletor)
+local expParent = CreateCard("Trial", "EXPEDIÇÃO")
+local expChild = CreateCard("Trial", "CONFIG MARINE")
+expChild.Parent.Visible = false -- Começa fechado
+
+-- 2. Função de Atualização (Melhorada)
+local function RefreshMarineChild()
+    local selected = State.ExpeditionManager.SelectedNPC
+    local data = State.ExpeditionManager[selected]
+    
+    -- Limpa o card filho (exceto o layout)
+    for _, child in pairs(expChild:GetChildren()) do
+        if not child:IsA("UIListLayout") then child:Destroy() end
+    end
+    
+    expChild.Parent.Visible = true
+    -- Acessa o Label de título do card (que é o pai do container expChild)
+    local titleLabel = expChild.Parent:FindFirstChildOfClass("TextLabel")
+    if titleLabel then titleLabel.Text = selected end
+    
+    -- Adiciona a busca com Custo/Tempo
+    AddExpeditionSearch(expChild, Database.Decks, data, "Target", 1)
+    
+    -- Botão Iniciar/Parar
+    AddToggle(expChild, "STATUS: " .. selected, data, "Active", "Expedition.lua", 2, 35)
+
+    HighlightCard(expChild.Parent)
+end
+
+-- 3. Dropdown no Card Pai (AGORA USANDO CALLBACK)
+local marineList = {"Marine 1", "Marine 2", "Marine 3"}
+
+-- Note que passei 'RefreshMarineChild' como o último argumento abaixo:
+AddDropdown(expParent, marineList, State.ExpeditionManager, "SelectedNPC", 1, 35, RefreshMarineChild)
+
+RefreshMarineChild()
 
 -- ==========================================
 -- 📑 TABS
