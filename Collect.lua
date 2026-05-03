@@ -1,7 +1,10 @@
 -- [[ DYMCK HUB - COLLECT SCRIPT (NOVO FORMATO) ]]
+
+-- 1. TRAVA DE CARREGAMENTO (IMPEDE MULTIPLICAÇÃO DO LOOP)
 if _G.CollectLoaded then 
-    -- Se já carregou e foi chamado pelo TimedButton, executa uma vez e encerra
-    if not _G.HubState.AutoCollectActive then
+    -- Se já carregou e foi chamado pelo botão individual (sem o Toggle AFK estar ativo)
+    -- apenas executa a coleta uma vez e encerra.
+    if _G.HubState and not _G.HubState.AutoCollectActive then
         task.spawn(function()
             local rs = game:GetService("ReplicatedStorage")
             local CardRemote = rs:WaitForChild("Remotes"):WaitForChild("Card")
@@ -36,14 +39,18 @@ local function executarColeta()
     end)
 end
 
--- Loop AFK
+-- Loop AFK (Executa em background permanentemente sem duplicar)
 task.spawn(function()
     while true do
+        if not _G.HubState then
+            _G.CollectLoaded = false
+            break
+        end
+
         if State and State.AutoCollectActive then
-            print("📦 COLLECT: Iniciando coleta automática...")
             executarColeta()
             
-            -- Espera 20 minutos ou até desligarem
+            -- Espera 20 minutos (1200s) checando a cada segundo se o botão foi desligado
             for i = 1, 1200 do
                 if not State.AutoCollectActive then break end
                 task.wait(1)
@@ -53,5 +60,5 @@ task.spawn(function()
     end
 end)
 
--- Execução imediata ao carregar
-executarColeta()
+-- Execução inicial ao carregar o script pela primeira vez
+task.spawn(executarColeta)
