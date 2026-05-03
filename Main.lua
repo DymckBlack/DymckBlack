@@ -864,15 +864,15 @@ AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
 local fastTrialCard = CreateCard("Trial", "TRIAL FAST")
 
 -- Input para o nome do personagem (Salva em State.TrialFast.Target)
-AddTextBox(fastTrialCard, "Personagem", State.TrialFast, "Target", 1, 26)
+AddTextBox(fastTrialCard, "Personagem", State.TrialFast, "Target", 1, 29)
 
 -- Dropdown de Dificuldade (Puxando da Database)
-AddDropdown(fastTrialCard, Database.TrialDifficulties, State.TrialFast, "Difficulty", 2, 26)
+AddDropdown(fastTrialCard, Database.TrialDifficulties, State.TrialFast, "Difficulty", 2, 25)
 
 -- Botão de Ativação (Chama o Trial_Fast.lua)
-AddTimedButton(fastTrialCard, "ATIVAR FAST", "Trial_Fast.lua", 3, 26)
+AddTimedButton(fastTrialCard, "ATIVAR FAST", "Trial_Fast.lua", 3, 27)
 
-AddToggle(fastTrialCard, "AUTO FAST", State.TrialFast, "Loop", "Trial_Fast.lua", 4, 26)
+AddToggle(fastTrialCard, "AUTO FAST", State.TrialFast, "Loop", "Trial_Fast.lua", 4, 27)
 
 -- ==========================================
 -- 🚢 ABA: EXPEDITION
