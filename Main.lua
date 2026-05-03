@@ -12,8 +12,8 @@ local BASE_URL = "https://raw.githubusercontent.com/DymckBlack/DymckBlack/main/"
 -- ==========================================
 
 _G.HubState = _G.HubState or {
-    CashActive = false, -- ADICIONE ESTA LINHA
-    AutoCollectActive = false, -- ADICIONE ESTA LINHA TAMBÉM
+    CashActive = false,
+    AutoCollectActive = false,
     Roll = { Target = "", Active = false },
     AntiAFKActive = false,
     Tower = { Target = "", Active = false, ItemAction = "Roll", ItemTarget = "", MaterialTarget = "", ItemLoopActive = false },
@@ -281,7 +281,9 @@ local function LoadScript(name)
     end)
 end
 
+-- ==========================================
 -- 1. Botão Liga/Desliga (Toggle)
+-- ==========================================
 local function AddToggle(parent, text, stateTable, key, scriptName, order, h)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
@@ -301,7 +303,9 @@ local function AddToggle(parent, text, stateTable, key, scriptName, order, h)
     end)
 end
 
+-- ==========================================
 -- 2. Botão de Clique Único (Timed)
+-- ==========================================
 local function AddTimedButton(parent, text, scriptName, order, h)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
@@ -329,7 +333,9 @@ local function AddTimedButton(parent, text, scriptName, order, h)
     end)
 end
 
+-- ==========================================
 -- 3. Caixa de Texto (TextBox)
+-- ==========================================
 local function AddTextBox(parent, placeholder, stateTable, key, order, h)
     local box = Instance.new("TextBox", parent)
     box.LayoutOrder = order or 0
@@ -348,7 +354,9 @@ local function AddTextBox(parent, placeholder, stateTable, key, order, h)
     end)
 end
 
+-- ==========================================
 -- 4. Menu de Escolha (Dropdown) - ATUALIZADO
+-- ==========================================
 local function AddDropdown(parent, list, stateTable, key, order, h, callback)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
@@ -381,7 +389,9 @@ local function AddDropdown(parent, list, stateTable, key, order, h, callback)
     return btn
 end
 
+-- ==========================================
 -- 5. Botão Híbrido (Toggle/Execução)
+-- ==========================================
 local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, scriptRoll, scriptUpgrade, order, h)
     local btn = Instance.new("TextButton", parent)
     btn.LayoutOrder = order or 0
@@ -410,7 +420,9 @@ local function AddHybridButton(parent, text, stateTable, actionKey, activeKey, s
     end)
 end
 
+-- ==========================================
 -- 6. Botões Duplos (Lado a Lado)
+-- ==========================================
 local function AddDoubleButtons(parent, text1, script1, text2, callback2, order, h)
     local container = Instance.new("Frame", parent)
     container.LayoutOrder = order or 0
@@ -443,7 +455,9 @@ local function AddDoubleButtons(parent, text1, script1, text2, callback2, order,
     CreateMiniBtn(text2, false, callback2)
 end
 
+-- ==========================================
 -- 7. Caixa de Busca Inteligente
+-- ==========================================
 local function AddSearchBox(parent, placeholder, list, stateTable, key, order, h)
     local container = Instance.new("Frame", parent)
     container.LayoutOrder = order or 0
@@ -605,7 +619,9 @@ end)
  end)    
 end
 
--- 9. Não sei o que faz certo ainda. Trocar nome.
+-- ==========================================
+-- 9. Botão CharInput
+-- ==========================================
 local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
     local i = Instance.new("TextBox", parent)
     i.Size = UDim2.new(1, -10, 0, 28)
@@ -622,7 +638,9 @@ local function CreateCharInput(parent, stateTable, deckName, slot, placeholder)
     end)
 end
 
--- 10. Não sei o que faz certo ainda. Trocar nome.
+-- ==========================================
+-- 10. Deck + Scroll
+-- ==========================================
 local function CreateDeckItem(scroll, layout, name, state)
     local itemFrame = Instance.new("Frame", scroll)
     itemFrame.Name = name
@@ -667,7 +685,9 @@ local function CreateDeckItem(scroll, layout, name, state)
     return itemFrame
 end
 
--- 11. Não sei o que faz certo ainda. Trocar nome.
+-- ==========================================
+-- 11. Deck + List
+-- ==========================================
 local function CreateDeckList(parent)
     local scroll = Instance.new("ScrollingFrame", parent)
     scroll.Size = UDim2.new(1, 0, 1, 0)
@@ -687,21 +707,29 @@ end
 -- 🌍 ABA: GLOBAL
 -- ==========================================
 
+-- ==========================
 -- 1. CARD CASH
+-- ==========================
 local cashCard = CreateCard("Global", "CASH")
 AddToggle(cashCard, "ON/OFF", State, "CashActive", "Cash.lua", 1, 35)
 
+-- ==========================
 -- 2. CARD COLLECT
+-- ==========================
 local collectCard = CreateCard("Global", "COLLECT")
 AddTimedButton(collectCard, "Coletar Agora", "Collect.lua", 1, 35)
 AddToggle(collectCard, "Coleta AFK", State, "AutoCollectActive", "Collect.lua", 2, 35)
 
+-- ==========================
 -- 3. CARD ROLL
+-- ==========================
 local rollCard = CreateCard("Global", "ROLL UR")
 AddTextBox(rollCard, "Personagem", State.Roll, "Target", 1, 35)
 AddToggle(rollCard, "INICIAR ROLL", State.Roll, "Active", "Grade.lua", 2, 35)
 
+-- ==========================
 -- 4. CARD ANTI AFK
+-- ==========================
 local afkCard = CreateCard("Global", "Anti-AFK")
 AddToggle(afkCard, "ANTI AFK", State, "AntiAFKActive", "Anti_Afk.lua", 1, 35)
 
@@ -709,16 +737,22 @@ AddToggle(afkCard, "ANTI AFK", State, "AntiAFKActive", "Anti_Afk.lua", 1, 35)
 -- 🏰 ABA: TORRE
 -- ==========================================
 
+-- ==========================
 -- 1. CARD TOWER
+-- ==========================
 local towerCard = CreateCard("Torre", "TOWER")
 AddTimedButton(towerCard, "Iniciar Torre", "Tower.lua", 1, 35)
 
+-- ==========================
 -- 2. CARD TOWER ROLL
+-- ==========================
 local t_rollCard = CreateCard("Torre", "TOWER ROLL")
 AddTextBox(t_rollCard, "Personagem", State.Tower, "Target", 1, 35)
 AddToggle(t_rollCard, "INICIAR ROLL", State.Tower, "Active", "T_Roll.lua", 2, 35)
 
+-- ==========================
 -- 3. CARD SET TOWER
+-- ==========================
 local itemCard = CreateCard("Torre", "SET TOWER")
 AddDropdown(itemCard, {"Roll", "Upgrade"}, State.Tower, "ItemAction", 1, 27)
 AddDropdown(itemCard, Database.Items, State.Tower, "ItemTarget", 2, 27)
@@ -729,7 +763,9 @@ AddHybridButton(itemCard, "EXECUTAR", State.Tower, "ItemAction", "ItemLoopActive
 -- ⚔️ ABA: INVASÃO
 -- ==========================================
 
--- 2. CARD RAID
+-- ==========================
+-- 1. CARD RAID
+-- ==========================
 local raidCard = CreateCard("Invasão", "RAID")
 AddTextBox(raidCard, "Personagem 1", State.Raid, "Char1", 1, 27)
 AddTextBox(raidCard, "Personagem 2", State.Raid, "Char2", 2, 27)
@@ -746,25 +782,33 @@ AddDoubleButtons(raidCard,
     4, 29
 )
 
+-- ==========================
 -- 2. CARD VOTAÇÂO
+-- ==========================
 local voteCard = CreateCard("Invasão", "VOTAÇÃO")
 AddSearchBox(voteCard, "Pesquisar Deck...", Database.Decks, State.Vote, "Selected", 1, 60)
 AddTimedButton(voteCard, "VOTAR", "Vote_Manual.lua", 2, 29)
 AddToggle(voteCard, "AUTO VOTE", State.Vote, "Auto", "Vote.lua", 3, 29)
 
+-- ==========================
 -- 3. CARD LEVEL UP
+-- ==========================
 local levelCard = CreateCard("Invasão", "LEVEL UP")
 AddTextBox(levelCard, "Personagem", State.Exp, "Name", 1, 27)
 AddTextBox(levelCard, "Quantidade", State.Exp, "Amount", 2, 27)
 AddDropdown(levelCard, Database.ExpTypes, State.Exp, "Type", 3, 27)
 AddTimedButton(levelCard, "UPAR", "Exp.lua", 4, 29)
 
+-- ==========================
 -- 4. CARD MANGA
+-- ==========================
 local mangaCard = CreateCard("Invasão", "MANGA")
 AddTextBox(mangaCard, "Personagem", State.Manga, "Name", 1, 35)
 AddTimedButton(mangaCard, "EVOLUIR", "Manga.lua", 2, 35)
 
+-- ==========================
 -- 5. CARD AUTO RAID AFK
+-- ==========================
 local raidAfkCard = CreateCard("Invasão", "RAID AFK")
 local listCard = CreateCard("Invasão", "DECKS")
 listCard.Visible = false
@@ -787,7 +831,9 @@ end
 -- 🌀 ABA: TRIAL
 -- ==========================================
 
+-- ==========================
 -- 1. CARD TRIAL
+-- ==========================
 local trialCard = CreateCard("Trial", "TRIAL")
 
 -- Input para o nome da Unidade
@@ -803,14 +849,18 @@ AddTimedButton(trialCard, "START TRIAL", "Trial.lua", 3, 27)
 -- BOTÃO DE LOOP (Opcional, se quiser deixar o farm infinito)
 AddToggle(trialCard, "AUTO TRIAL", State.Trial, "Loop", "Trial.lua", 4, 27)
 
+-- ==========================
 -- 2. CARD UP STAR
+-- ==========================
 local starUpCard = CreateCard("Trial", "UP STAR")
 
 AddTextBox(starUpCard, "Personagem", State.StarTrialLogic, "UnitName", 1, 35)
 
 AddTimedButton(starUpCard, "UPAR STAR", "Star.lua", 2, 35)
 
+-- ==========================
 -- 3. CARD TRIAL FAST
+-- ==========================
 local fastTrialCard = CreateCard("Trial", "TRIAL FAST")
 
 -- Input para o nome do personagem (Salva em State.TrialFast.Target)
@@ -823,9 +873,12 @@ AddDropdown(fastTrialCard, Database.TrialDifficulties, State.TrialFast, "Difficu
 AddTimedButton(fastTrialCard, "ATIVAR FAST", "Trial_Fast.lua", 3, 35)
 
 -- ==========================================
--- 🚢 CARD EXPEDITION (PAI)
+-- 🚢 ABA: EXPEDITION
 -- ==========================================
 
+-- ==========================
+-- 4. CARD EXPEDITION PAI
+-- ==========================
 local expeditionCard = CreateCard("Trial", "EXPEDITION")
 
 local labels = {}
@@ -841,9 +894,9 @@ for i = 1, 3 do
     table.insert(labels, lbl)
 end
 
--- ==========================================
--- ⚙️ CARD EXPEDITION CONFIG (FILHO)
--- ==========================================
+-- ==========================
+-- 5. CARD EXPEDITION (FILHO)
+-- ==========================
 
 local expeditionConfig = CreateCard("Trial", "SETTINGS")
 expeditionConfig.Visible = false
