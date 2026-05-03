@@ -882,6 +882,7 @@ AddTimedButton(fastTrialCard, "ATIVAR FAST", "Trial_Fast.lua", 3, 35)
 local expeditionCard = CreateCard("Trial", "EXPEDITION")
 
 local labels = {}
+local COR_AZUL = "#00aaff" -- Cor azul ciano para destaque
 
 for i = 1, 3 do
     local lbl = Instance.new("TextLabel", expeditionCard)
@@ -890,6 +891,7 @@ for i = 1, 3 do
     lbl.TextColor3 = Color3.new(1,1,1)
     lbl.Font = Enum.Font.GothamBold
     lbl.TextSize = 10
+    lbl.RichText = true
     lbl.Text = "Marine "..i..": Idle"
     table.insert(labels, lbl)
 end
@@ -932,13 +934,14 @@ for i = 1, 3 do
     label.TextColor3 = Color3.new(1,1,1)
     label.Font = Enum.Font.GothamBold
     label.TextSize = 9
+    label.RichText = true
 
     local function update(val)
         local data = Database.Expedition[val]
         if not data then return end
 
         selected[key] = val
-        label.Text = val.." | $"..data.Cost.." | "..data.Time
+        label.Text = string.format("<font color='%s'>%s | $%s | %s</font>", COR_AZUL, val, data.Cost, data.Time)
     end
 
        -- NÃO define padrão automático
@@ -1070,8 +1073,8 @@ task.spawn(function()
                 local s = math.floor(remaining % 60)
 
                 labels[i].Text = string.format(
-                    "Marine %d: %02d:%02d:%02d",
-                    i, h, m, s
+                    "Marine %d: <font color='%s'>%02d:%02d:%02d</font>",
+                    i, COR_AZUL, h, m, s
                 )
             else
                 labels[i].Text = "Marine "..i..": Idle"
