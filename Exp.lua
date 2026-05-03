@@ -1,18 +1,25 @@
--- Exp.lua (Otimizado para Gemini Master Hub)
+-- [[ DYMCK HUB - EXP SCRIPT (VERSÃO ESTÁVEL) ]]
+
+-- 1. TRAVA DE SEGURANÇA (DEBOUNCE)
+-- Impede spam de cliques no botão de UP
+if _G.ExpSpamProtection then 
+    return 
+end
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RaidRemote = ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("Raid")
-
--- Referência direta ao estado do Hub
 local State = _G.HubState.Exp
 
-if RaidRemote then
-    -- Pegamos os valores atuais no exato momento da execução
+if RaidRemote and State then
+    -- Pegamos os valores atuais do estado
     local charName = tostring(State.Name)
     local expType  = tostring(State.Type)
     local amount   = tostring(State.Amount)
 
-    -- Validação básica para não disparar o remoto vazio
+    -- Validação silenciosa
     if charName ~= "" and amount ~= "" then
+        _G.ExpSpamProtection = true -- Ativa a trava
+        
         local args = {
             [1] = "XP",
             [2] = charName,
@@ -20,16 +27,13 @@ if RaidRemote then
             [4] = amount
         }
 
-        local success, err = pcall(function()
+        pcall(function()
             RaidRemote:FireServer(unpack(args))
         end)
 
-        if success then
-            print("GeminiHub: XP Enviado! -> " .. charName .. " [" .. amount .. " " .. expType .. "]")
-        else
-            warn("GeminiHub: Erro ao enviar XP -> " .. err)
-        end
-    else
-        warn("GeminiHub: Preencha o nome e a quantidade antes de upar!")
+        -- Aguarda 1 segundo antes de permitir outro envio (proteção de spam)
+        task.delay(1, function()
+            _G.ExpSpamProtection = false
+        end)
     end
 end
