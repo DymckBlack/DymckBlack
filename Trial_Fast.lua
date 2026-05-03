@@ -84,7 +84,7 @@ task.spawn(function()
                         end)
                         task.wait(0.2) -- Delay menor entre challengers para ser "Fast"
                     end
-                    task.wait(1.5) -- Espera um pouco antes de reiniciar o ciclo 1-4
+                    task.wait(0.5) -- Espera um pouco antes de reiniciar o ciclo 1-4
                 end
             end
         end
