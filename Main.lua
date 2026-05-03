@@ -850,8 +850,21 @@ local expChild = CreateCard("Trial", "CONFIG MARINE")
 -- Começa fechado (CORRETO: mexe no CARD real)
 expChild.Parent.Visible = false
 
+-- 🔥 DROPDOWN DO CARD PAI (ESSENCIAL)
+AddDropdown(
+    expParent,
+    {"Marine 1", "Marine 2", "Marine 3"},
+    State.ExpeditionManager,
+    "SelectedNPC",
+    1,
+    35,
+    function()
+        RefreshMarineChild()
+    end
+)
+
 -- 2. Função de Atualização
-local function RefreshMarineChild()
+function RefreshMarineChild()
     local selected = State.ExpeditionManager.SelectedNPC or "Marine 1"
     local data = State.ExpeditionManager[selected]
 
@@ -895,6 +908,11 @@ local function RefreshMarineChild()
         end
     end)
 end
+
+-- 🔥 AUTO INICIALIZA (faz já aparecer algo ao abrir)
+task.defer(function()
+    RefreshMarineChild()
+end)
 
 -- ==========================================
 -- 📑 TABS
