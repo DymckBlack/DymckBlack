@@ -11,6 +11,16 @@ _G.VoteListenerRunning = true
 -- Referência ao estado central
 local State = _G.HubState.Vote
 
+-- Função para gerenciar a suspensão dos outros loops (Trial / Trial Fast)
+local function IniciarPausaRaid()
+    _G.RaidPauseActive = true
+    
+    -- Timer de 560 segundos (9 minutos e 20 segundos)
+    task.delay(560, function()
+        _G.RaidPauseActive = false
+    end)
+end
+
 local function RealizarVoto()
     -- Verifica se o State ainda existe e se a opção Auto está ligada
     if not _G.HubState or not State.Auto then return end
@@ -19,6 +29,8 @@ local function RealizarVoto()
     if remote then
         pcall(function()
             remote:FireServer("Vote", State.Selected)
+            -- Ativa a pausa global assim que o voto é realizado
+            IniciarPausaRaid()
         end)
     end
 end
@@ -30,6 +42,7 @@ local function setupChatListener()
         while true do
             if not _G.HubState then
                 _G.VoteListenerRunning = false
+                _G.RaidPauseActive = false -- Reseta a pausa caso o Hub feche
                 break
             end
             task.wait(2)
