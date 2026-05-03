@@ -26,12 +26,36 @@ _G.HubState = _G.HubState or {
     StarTrialLogic = { UnitName = "" },
     TrialFast = { Target = "Luffy", Difficulty = "Easy", Active = false },
     ExpeditionManager = {
-    ["Marine 1"] = { Target = "Pirate", Active = false },
-    ["Marine 2"] = { Target = "Pirate", Active = false },
-    ["Marine 3"] = { Target = "Pirate", Active = false },
+    ["Marine 1"] = { Target = "Pirate", Active = false, EndTime = 0 },
+    ["Marine 2"] = { Target = "Pirate", Active = false, EndTime = 0 },
+    ["Marine 3"] = { Target = "Pirate", Active = false, EndTime = 0 },
     }
 }
 local State = _G.HubState
+
+-- ==========================================
+-- ⏱️ EXPEDITION LOOP GLOBAL
+-- ==========================================
+
+if not _G.ExpeditionLoop then
+    _G.ExpeditionLoop = true
+
+    task.spawn(function()
+        while true do
+            for name, marine in pairs(State.ExpeditionManager) do
+                if marine.Active then
+                    local remaining = marine.EndTime - tick()
+
+                    if remaining <= 0 then
+                        marine.Active = false
+                        marine.EndTime = 0
+                    end
+                end
+            end
+            task.wait(1)
+        end
+    end)
+end
 
 -- ==========================================
 -- 🧹 RESET
@@ -799,9 +823,178 @@ AddDropdown(fastTrialCard, Database.TrialDifficulties, State.TrialFast, "Difficu
 AddTimedButton(fastTrialCard, "ATIVAR FAST", "Trial_Fast.lua", 3, 35)
 
 -- ==========================================
--- 🌀 ABA: TRIAL / EXPEDITION
+-- 🚢 CARD EXPEDITION (PAI)
 -- ==========================================
 
+local expeditionCard = CreateCard("Trial", "EXPEDITION")
+
+local labels = {}
+
+for i = 1, 3 do
+    local lbl = Instance.new("TextLabel", expeditionCard)
+    lbl.Size = UDim2.new(1,0,0,18)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = Color3.new(1,1,1)
+    lbl.Font = Enum.Font.GothamBold
+    lbl.TextSize = 10
+    lbl.Text = "Marine "..i..": Idle"
+    table.insert(labels, lbl)
+end
+
+-- ==========================================
+-- ⚙️ CARD EXPEDITION CONFIG (FILHO)
+-- ==========================================
+
+local expeditionConfig = CreateCard("Trial", "EXP CONFIG")
+expeditionConfig.Visible = false
+
+local selected = {
+    ["Marine 1"] = "Pirate",
+    ["Marine 2"] = "Pirate",
+    ["Marine 3"] = "Pirate"
+}
+
+for i = 1, 3 do
+    local key = "Marine "..i
+
+    local container = Instance.new("Frame", expeditionConfig)
+    container.Size = UDim2.new(1,0,0,55)
+    container.BackgroundTransparency = 1
+
+    local box = Instance.new("TextBox", container)
+    box.Size = UDim2.new(1,0,0,25)
+    box.PlaceholderText = "Buscar deck..."
+    box.Text = ""
+    box.BackgroundColor3 = Color3.fromRGB(50,50,55)
+    box.TextColor3 = Color3.new(1,1,1)
+    box.Font = Enum.Font.GothamBold
+    box.TextSize = 10
+    Instance.new("UICorner", box)
+
+    local label = Instance.new("TextLabel", container)
+    label.Size = UDim2.new(1,0,0,20)
+    label.Position = UDim2.new(0,0,0,28)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = Color3.new(1,1,1)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 10
+
+    local function update(val)
+        local data = Database.Expedition[val]
+        if not data then return end -- proteção
+
+        selected[key] = val
+        label.Text = val.." | $"..data.Cost.." | "..data.Time
+    end
+
+    update("Pirate")
+
+    box:GetPropertyChangedSignal("Text"):Connect(function()
+        local query = box.Text:lower()
+
+        for name, _ in pairs(Database.Expedition) do
+            if name:lower():find(query) == 1 then
+                update(name)
+                break
+            end
+        end
+    end)
+end
+
+-- ==========================================
+-- ▶ BOTÃO INICIAR (INTELIGENTE)
+-- ==========================================
+
+local startBtn = Instance.new("TextButton", expeditionConfig)
+startBtn.Size = UDim2.new(1,0,0,30)
+startBtn.Text = "INICIAR EXPEDIÇÃO"
+startBtn.BackgroundColor3 = COR_VERMELHO
+startBtn.TextColor3 = Color3.new(1,1,1)
+startBtn.Font = Enum.Font.GothamBold
+startBtn.TextSize = 10
+Instance.new("UICorner", startBtn)
+
+startBtn.MouseButton1Click:Connect(function()
+
+    for i = 1, 3 do
+        local key = "Marine "..i
+        local marine = State.ExpeditionManager[key]
+
+        if not marine.Active then
+            local target = selected[key]
+            local data = Database.Expedition[target]
+
+            if not data then continue end -- proteção
+
+            local parts = {}
+            for p in string.gmatch(data.Time, "%d+") do
+                table.insert(parts, tonumber(p))
+            end
+
+            local seconds = 0
+            if #parts == 2 then
+                seconds = parts[1]*60 + parts[2]
+            elseif #parts == 3 then
+                seconds = parts[1]*3600 + parts[2]*60 + parts[3]
+            end
+
+            if seconds <= 0 then
+                warn("Tempo inválido para:", target)
+                continue
+            end
+
+            marine.Target = target
+            marine.Active = true
+            marine.EndTime = tick() + seconds
+
+            -- FUTURO: Remote aqui
+        end
+    end
+end)
+
+-- ==========================================
+-- 🔘 BOTÃO ABRIR / FECHAR CONFIG
+-- ==========================================
+
+local isOpen = false
+
+AddDoubleButtons(expeditionCard,
+    "CONFIG", nil,
+    "ABRIR", function()
+        isOpen = not isOpen
+        expeditionConfig.Visible = isOpen
+    end,
+    4, 25
+)
+
+-- ==========================================
+-- 🔄 LOOP VISUAL DO CARD PAI
+-- ==========================================
+
+task.spawn(function()
+    while expeditionCard and expeditionCard.Parent do
+        for i = 1, 3 do
+            local marine = State.ExpeditionManager["Marine "..i]
+
+            if marine.Active then
+                local remaining = math.max(0, marine.EndTime - tick())
+
+                local h = math.floor(remaining / 3600)
+                local m = math.floor((remaining % 3600) / 60)
+                local s = math.floor(remaining % 60)
+
+                labels[i].Text = string.format(
+                    "Marine %d: %02d:%02d:%02d",
+                    i, h, m, s
+                )
+            else
+                labels[i].Text = "Marine "..i..": Idle"
+            end
+        end
+
+        task.wait(1)
+    end
+end)
 
 -- ==========================================
 -- 📑 TABS
